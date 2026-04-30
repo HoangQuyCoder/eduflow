@@ -1,0 +1,29 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+target/
+
+# Maven
+.m2/
+pom.xml.tag
+pom.xml.asc
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+*.properties
+
+# Docker
+docker-compose.override.yml
