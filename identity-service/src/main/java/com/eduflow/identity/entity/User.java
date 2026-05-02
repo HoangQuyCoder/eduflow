@@ -1,9 +1,5 @@
 package com.eduflow.identity.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -31,8 +27,8 @@ public class User {
     @Column(nullable = false)
     private String fullName;
     
-    @Column(nullable = false)
-    private Boolean isActive;
+    @Column(name = "is_active", nullable = false)
+    private Boolean accountActive;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<UserRole> roles = new HashSet<>();
@@ -51,7 +47,7 @@ public class User {
         id = UUID.randomUUID();
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        isActive = true;
+        accountActive = true;
     }
     
     @PreUpdate

@@ -1,9 +1,5 @@
 package com.eduflow.identity.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
