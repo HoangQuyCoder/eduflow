@@ -27,7 +27,6 @@ public class User {
     private Boolean accountActive;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @Builder.Default
     private Set<UserRole> roles = new HashSet<>();
     
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)

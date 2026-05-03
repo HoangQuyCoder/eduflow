@@ -97,4 +97,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return new JwtAuthenticationFilter(jwtService, userDetailsService);
         }
     }
+
+    public void setJwtService(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
 }

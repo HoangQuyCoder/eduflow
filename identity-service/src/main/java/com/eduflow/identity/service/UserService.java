@@ -107,4 +107,8 @@ public class UserService {
             return new UserService(userRepository, userProfileRepository);
         }
     }
+
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 }

@@ -80,4 +80,16 @@ public class EnrollmentService {
         response.setProgressPercent(enrollment.getProgressPercent());
         return response;
     }
+
+    public EnrollmentRepository getEnrollmentRepository() {
+        return enrollmentRepository;
+    }
+
+    public CourseClient getCourseClient() {
+        return courseClient;
+    }
+
+    public KafkaTemplate<String, Object> getKafkaTemplate() {
+        return kafkaTemplate;
+    }
 }

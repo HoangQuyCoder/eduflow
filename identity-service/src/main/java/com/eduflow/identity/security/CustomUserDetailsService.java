@@ -44,4 +44,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             return new CustomUserDetailsService(userRepository);
         }
     }
+
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 }

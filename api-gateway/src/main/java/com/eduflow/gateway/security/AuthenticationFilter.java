@@ -47,4 +47,12 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     }
     
     public static class Config {}
+
+    public JwtTokenProvider getJwtTokenProvider() {
+        return jwtTokenProvider;
+    }
+
+    public void setJwtTokenProvider(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 }
