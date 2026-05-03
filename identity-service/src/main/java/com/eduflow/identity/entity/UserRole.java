@@ -1,13 +1,13 @@
 package com.eduflow.identity.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @Entity
 @Table(name = "user_roles", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role"}))
@@ -36,10 +36,4 @@ public class UserRole {
         id = UUID.randomUUID();
         createdAt = LocalDateTime.now();
     }
-}
-
-enum Role {
-    ADMIN,
-    TEACHER,
-    STUDENT
 }
