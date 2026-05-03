@@ -6,14 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
-import lombok.Getter;
-import lombok.Builder;
 
 @Service
-@RequiredArgsConstructor
-@Getter
-@Builder
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -25,4 +19,29 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(user);
     }
 
+
+    public UserRepository getUserRepository() {
+        return userRepository;
+    }
+
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public static CustomUserDetailsServiceBuilder builder() {
+        return new CustomUserDetailsServiceBuilder();
+    }
+    
+    public static class CustomUserDetailsServiceBuilder {
+        private UserRepository userRepository;
+        
+        public CustomUserDetailsServiceBuilder userRepository(UserRepository userRepository) {
+            this.userRepository = userRepository;
+            return this;
+        }
+
+        public CustomUserDetailsService build() {
+            return new CustomUserDetailsService(userRepository);
+        }
+    }
 }

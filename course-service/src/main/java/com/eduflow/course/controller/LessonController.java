@@ -2,8 +2,6 @@ package com.eduflow.course.controller;
 
 import com.eduflow.course.dto.LessonDTO;
 import com.eduflow.course.service.LessonService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/lessons")
-@RequiredArgsConstructor
 @Validated
-@Slf4j
 public class LessonController {
 
     private final LessonService lessonService;
@@ -130,5 +126,15 @@ public class LessonController {
         
         Long count = lessonService.getLessonCountByCourseId(courseId);
         return ResponseEntity.ok(count);
+    }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LessonController.class);
+
+    public LessonService getLessonService() {
+        return lessonService;
+    }
+
+    public LessonController(LessonService lessonService) {
+        this.lessonService = lessonService;
     }
 }

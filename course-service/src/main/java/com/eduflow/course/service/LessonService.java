@@ -6,8 +6,6 @@ import com.eduflow.course.exception.CourseNotFoundException;
 import com.eduflow.course.exception.LessonNotFoundException;
 import com.eduflow.course.repository.CourseRepository;
 import com.eduflow.course.repository.LessonRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,8 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class LessonService {
 
     private final LessonRepository lessonRepository;
@@ -190,5 +186,20 @@ public class LessonService {
                 .createdAt(lesson.getCreatedAt())
                 .updatedAt(lesson.getUpdatedAt())
                 .build();
+    }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LessonService.class);
+
+    public LessonRepository getLessonRepository() {
+        return lessonRepository;
+    }
+
+    public CourseRepository getCourseRepository() {
+        return courseRepository;
+    }
+
+    public LessonService(LessonRepository lessonRepository, CourseRepository courseRepository) {
+        this.lessonRepository = lessonRepository;
+        this.courseRepository = courseRepository;
     }
 }

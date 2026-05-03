@@ -2,8 +2,6 @@ package com.eduflow.course.controller;
 
 import com.eduflow.course.dto.CourseDTO;
 import com.eduflow.course.service.CourseService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/courses")
-@RequiredArgsConstructor
 @Validated
-@Slf4j
 public class CourseController {
 
     private final CourseService courseService;
@@ -200,5 +196,15 @@ public class CourseController {
         
         courseService.updateEnrollmentCount(courseId, increment);
         return ResponseEntity.noContent().build();
+    }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CourseController.class);
+
+    public CourseService getCourseService() {
+        return courseService;
+    }
+
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
     }
 }

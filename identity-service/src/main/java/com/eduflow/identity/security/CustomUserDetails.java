@@ -7,13 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-import lombok.Getter;
-import lombok.Builder;
-import lombok.AllArgsConstructor;
 
-@Getter
-@Builder
-@AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
     private final User user;
@@ -53,5 +47,30 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return Boolean.TRUE.equals(user.getAccountActive());
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public CustomUserDetails(User user) {
+        this.user = user;
+    }
+
+    public static CustomUserDetailsBuilder builder() {
+        return new CustomUserDetailsBuilder();
+    }
+    
+    public static class CustomUserDetailsBuilder {
+        private User user;
+        
+        public CustomUserDetailsBuilder user(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public CustomUserDetails build() {
+            return new CustomUserDetails(user);
+        }
     }
 }

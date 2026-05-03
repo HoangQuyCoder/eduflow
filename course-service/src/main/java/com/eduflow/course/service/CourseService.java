@@ -7,8 +7,6 @@ import com.eduflow.course.exception.CourseNotFoundException;
 import com.eduflow.course.exception.UnauthorizedException;
 import com.eduflow.course.repository.CourseRepository;
 import com.eduflow.course.repository.LessonRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,14 +23,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class CourseService {
 
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final com.eduflow.course.feign.IdentityClient identityClient;
 
     private static final String FEATURED_COURSES_CACHE_KEY = "featured:courses";
     private static final long CACHE_TTL = 3600; // 1 hour in seconds
@@ -320,11 +317,22 @@ public class CourseService {
     // Private helper methods
 
     private CourseDTO mapToDTO(Course course) {
+        String instructorName = "Unknown";
+        try {
+            com.eduflow.course.dto.external.UserDTO instructor = identityClient.getUser(course.getInstructorId());
+            if (instructor != null && instructor.getFullName() != null) {
+                instructorName = instructor.getFullName();
+            }
+        } catch (Exception e) {
+            log.warn("Could not fetch instructor name for ID: {}", course.getInstructorId());
+        }
+
         return CourseDTO.builder()
                 .id(course.getId())
                 .title(course.getTitle())
                 .description(course.getDescription())
                 .instructorId(course.getInstructorId())
+                .instructorName(instructorName)
                 .price(course.getPrice())
                 .category(course.getCategory())
                 .level(course.getLevel())
@@ -347,9 +355,12 @@ public class CourseService {
 
     private void publishCourseEvent(String courseId, String eventType) {
         try {
+            Course course = courseRepository.findById(courseId).orElse(null);
+            String instructorId = course != null ? course.getInstructorId() : "";
+            
             String payload = String.format(
                     "{\"courseId\":\"%s\",\"instructorId\":\"%s\",\"eventType\":\"%s\",\"timestamp\":%d}",
-                    courseId, "", eventType, System.currentTimeMillis()
+                    courseId, instructorId, eventType, System.currentTimeMillis()
             );
 
             Message<String> message = MessageBuilder
@@ -362,5 +373,31 @@ public class CourseService {
         } catch (Exception e) {
             log.error("Error publishing course event", e);
         }
+    }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CourseService.class);
+
+    public CourseRepository getCourseRepository() {
+        return courseRepository;
+    }
+
+    public LessonRepository getLessonRepository() {
+        return lessonRepository;
+    }
+
+    public RedisTemplate<String, Object> getRedisTemplate() {
+        return redisTemplate;
+    }
+
+    public KafkaTemplate<String, String> getKafkaTemplate() {
+        return kafkaTemplate;
+    }
+
+    public CourseService(CourseRepository courseRepository, LessonRepository lessonRepository, RedisTemplate<String, Object> redisTemplate, KafkaTemplate<String, String> kafkaTemplate, com.eduflow.course.feign.IdentityClient identityClient) {
+        this.courseRepository = courseRepository;
+        this.lessonRepository = lessonRepository;
+        this.redisTemplate = redisTemplate;
+        this.kafkaTemplate = kafkaTemplate;
+        this.identityClient = identityClient;
     }
 }

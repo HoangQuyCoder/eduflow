@@ -2,14 +2,10 @@ package com.eduflow.notification.consumer;
 
 import com.eduflow.notification.event.EnrollmentEvent;
 import com.eduflow.notification.service.NotificationService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class NotificationConsumer {
 
     private final NotificationService notificationService;
@@ -29,5 +25,15 @@ public class NotificationConsumer {
                     "EMAIL"
             );
         }
+    }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NotificationConsumer.class);
+
+    public NotificationService getNotificationService() {
+        return notificationService;
+    }
+
+    public NotificationConsumer(NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 }

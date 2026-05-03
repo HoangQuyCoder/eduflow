@@ -2,8 +2,6 @@ package com.eduflow.course.controller;
 
 import com.eduflow.course.dto.CourseRatingDTO;
 import com.eduflow.course.service.CourseRatingService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/ratings")
-@RequiredArgsConstructor
 @Validated
-@Slf4j
 public class CourseRatingController {
 
     private final CourseRatingService courseRatingService;
@@ -109,5 +105,15 @@ public class CourseRatingController {
         
         Long count = courseRatingService.getRatingCountByCourseId(courseId);
         return ResponseEntity.ok(count);
+    }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CourseRatingController.class);
+
+    public CourseRatingService getCourseRatingService() {
+        return courseRatingService;
+    }
+
+    public CourseRatingController(CourseRatingService courseRatingService) {
+        this.courseRatingService = courseRatingService;
     }
 }
