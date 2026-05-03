@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eduflow-config
+data:
+  EUREKA_HOST: "eureka-service"
+  EUREKA_PORT: "8761"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+  REDIS_HOST: "redis-service"
+  MONGODB_HOST: "mongodb-service"
+  POSTGRES_IDENTITY_HOST: "postgres-identity-service"
+  POSTGRES_ENROLLMENT_HOST: "postgres-enrollment-service"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: eduflow-secrets
+type: Opaque
+data:
+  # Values are base64 encoded
+  # postgres/postgres
+  POSTGRES_USER: cG9zdGdyZXM=
+  POSTGRES_PASSWORD: cG9zdGdyZXM=
+  # root/example
+  MONGO_ROOT_USERNAME: cm9vdA==
+  MONGO_ROOT_PASSWORD: ZXhhbXBsZQ==
+  # JWT Secret
+  JWT_SECRET: NTM2NzU2NkI1OTdwMzNzNnY5N3kyL0IyRzQ1Mig0ODJCN0Q2MjUxNmU1NDY4NTc2bVpBNzEzNDR0Mzc=
