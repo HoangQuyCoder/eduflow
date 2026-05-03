@@ -11,8 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Builder;
 
 @Service
+@RequiredArgsConstructor
+@Getter
+@Builder
 public class UserService {
 
     private final UserRepository userRepository;
@@ -71,42 +77,5 @@ public class UserService {
                 .phone(profile != null ? profile.getPhone() : null)
                 .createdAt(user.getCreatedAt())
                 .build();
-    }
-
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
-
-    public UserProfileRepository getUserProfileRepository() {
-        return userProfileRepository;
-    }
-
-    public UserService() {}
-
-    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository) {
-        this.userRepository = userRepository;
-        this.userProfileRepository = userProfileRepository;
-    }
-
-    public static UserServiceBuilder builder() {
-        return new UserServiceBuilder();
-    }
-    
-    public static class UserServiceBuilder {
-        private UserRepository userRepository; private UserProfileRepository userProfileRepository;
-        
-        public UserServiceBuilder userRepository(UserRepository userRepository) {
-            this.userRepository = userRepository;
-            return this;
-        }
-
-        public UserServiceBuilder userProfileRepository(UserProfileRepository userProfileRepository) {
-            this.userProfileRepository = userProfileRepository;
-            return this;
-        }
-
-        public UserService build() {
-            return new UserService(userRepository, userProfileRepository);
-        }
     }
 }

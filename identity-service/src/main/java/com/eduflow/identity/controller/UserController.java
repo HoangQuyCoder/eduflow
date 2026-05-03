@@ -5,12 +5,18 @@ import com.eduflow.identity.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Builder;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
+@Getter
+@Builder
 public class UserController {
 
     private final UserService userService;
@@ -32,32 +38,5 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
-    }
-
-    public UserService getUserService() {
-        return userService;
-    }
-
-    public UserController() {}
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
-    public static UserControllerBuilder builder() {
-        return new UserControllerBuilder();
-    }
-    
-    public static class UserControllerBuilder {
-        private UserService userService;
-        
-        public UserControllerBuilder userService(UserService userService) {
-            this.userService = userService;
-            return this;
-        }
-
-        public UserController build() {
-            return new UserController(userService);
-        }
     }
 }

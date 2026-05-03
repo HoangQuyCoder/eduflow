@@ -7,9 +7,15 @@ import com.eduflow.identity.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Builder;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
+@Getter
+@Builder
 public class AuthController {
 
     private final AuthService authService;
@@ -43,32 +49,5 @@ public class AuthController {
     @GetMapping("/validate")
     public ResponseEntity<Void> validateToken() {
         return ResponseEntity.ok().build();
-    }
-
-    public AuthService getAuthService() {
-        return authService;
-    }
-
-    public AuthController() {}
-
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
-
-    public static AuthControllerBuilder builder() {
-        return new AuthControllerBuilder();
-    }
-    
-    public static class AuthControllerBuilder {
-        private AuthService authService;
-        
-        public AuthControllerBuilder authService(AuthService authService) {
-            this.authService = authService;
-            return this;
-        }
-
-        public AuthController build() {
-            return new AuthController(authService);
-        }
     }
 }

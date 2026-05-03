@@ -18,9 +18,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -57,42 +60,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    public JwtAuthenticationFilter getJwtAuthFilter() {
-        return jwtAuthFilter;
-    }
-
-    public UserDetailsService getUserDetailsService() {
-        return userDetailsService;
-    }
-
-    public SecurityConfig() {}
-
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, UserDetailsService userDetailsService) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.userDetailsService = userDetailsService;
-    }
-
-    public static SecurityConfigBuilder builder() {
-        return new SecurityConfigBuilder();
-    }
-    
-    public static class SecurityConfigBuilder {
-        private JwtAuthenticationFilter jwtAuthFilter; private UserDetailsService userDetailsService;
-        
-        public SecurityConfigBuilder jwtAuthFilter(JwtAuthenticationFilter jwtAuthFilter) {
-            this.jwtAuthFilter = jwtAuthFilter;
-            return this;
-        }
-
-        public SecurityConfigBuilder userDetailsService(UserDetailsService userDetailsService) {
-            this.userDetailsService = userDetailsService;
-            return this;
-        }
-
-        public SecurityConfig build() {
-            return new SecurityConfig(jwtAuthFilter, userDetailsService);
-        }
     }
 }

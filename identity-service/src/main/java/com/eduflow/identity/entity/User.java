@@ -6,6 +6,10 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @Entity
 @Table(name = "users")
@@ -31,6 +35,7 @@ public class User {
     private Boolean accountActive;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Builder.Default
     private Set<UserRole> roles = new HashSet<>();
     
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
