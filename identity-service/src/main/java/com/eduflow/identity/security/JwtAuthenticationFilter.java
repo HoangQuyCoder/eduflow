@@ -16,14 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import lombok.RequiredArgsConstructor;
-import lombok.Getter;
-import lombok.Builder;
 
 @Component
-@RequiredArgsConstructor
-@Getter
-@Builder
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
@@ -67,5 +61,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.warn("JWT authentication failed: {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
+    }
+
+    public JwtService getJwtService() {
+        return jwtService;
+    }
+
+    public UserDetailsService getUserDetailsService() {
+        return userDetailsService;
+    }
+
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+    }
+
+    public static JwtAuthenticationFilterBuilder builder() {
+        return new JwtAuthenticationFilterBuilder();
+    }
+    
+    public static class JwtAuthenticationFilterBuilder {
+        private JwtService jwtService; private UserDetailsService userDetailsService;
+        
+        public JwtAuthenticationFilterBuilder jwtService(JwtService jwtService) {
+            this.jwtService = jwtService;
+            return this;
+        }
+
+        public JwtAuthenticationFilterBuilder userDetailsService(UserDetailsService userDetailsService) {
+            this.userDetailsService = userDetailsService;
+            return this;
+        }
+
+        public JwtAuthenticationFilter build() {
+            return new JwtAuthenticationFilter(jwtService, userDetailsService);
+        }
     }
 }

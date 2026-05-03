@@ -6,8 +6,6 @@ import com.eduflow.course.exception.CourseNotFoundException;
 import com.eduflow.course.exception.RatingNotFoundException;
 import com.eduflow.course.repository.CourseRatingRepository;
 import com.eduflow.course.repository.CourseRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,8 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class CourseRatingService {
 
     private final CourseRatingRepository courseRatingRepository;
@@ -168,5 +164,25 @@ public class CourseRatingService {
                 .review(rating.getReview())
                 .createdAt(rating.getCreatedAt())
                 .build();
+    }
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CourseRatingService.class);
+
+    public CourseRatingRepository getCourseRatingRepository() {
+        return courseRatingRepository;
+    }
+
+    public CourseRepository getCourseRepository() {
+        return courseRepository;
+    }
+
+    public CourseService getCourseService() {
+        return courseService;
+    }
+
+    public CourseRatingService(CourseRatingRepository courseRatingRepository, CourseRepository courseRepository, CourseService courseService) {
+        this.courseRatingRepository = courseRatingRepository;
+        this.courseRepository = courseRepository;
+        this.courseService = courseService;
     }
 }
