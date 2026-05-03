@@ -58,4 +58,8 @@ public class UserController {
             return new UserController(userService);
         }
     }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 }

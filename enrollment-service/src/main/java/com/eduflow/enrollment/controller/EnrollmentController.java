@@ -38,4 +38,8 @@ public class EnrollmentController {
         // Implementation for details
         return ResponseEntity.notFound().build();
     }
+
+    public EnrollmentService getEnrollmentService() {
+        return enrollmentService;
+    }
 }

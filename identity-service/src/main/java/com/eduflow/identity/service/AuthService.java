@@ -189,4 +189,8 @@ public class AuthService {
             return new AuthService(userRepository, userProfileRepository, passwordEncoder, jwtService, authenticationManager);
         }
     }
+
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 }

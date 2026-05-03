@@ -69,4 +69,8 @@ public class AuthController {
             return new AuthController(authService);
         }
     }
+
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
+    }
 }

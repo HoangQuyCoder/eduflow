@@ -73,4 +73,8 @@ public class CustomUserDetails implements UserDetails {
             return new CustomUserDetails(user);
         }
     }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
