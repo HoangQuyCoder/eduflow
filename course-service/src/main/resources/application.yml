@@ -1,19 +1,19 @@
 spring:
   application:
     name: course-service
-  
+
   # MongoDB Configuration
   data:
     mongodb:
       uri: mongodb://${MONGO_USER:root}:${MONGO_PASSWORD:example}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/course_db?authSource=admin
       auto-index-creation: true
-  
+
   # Redis Configuration
   redis:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
     timeout: 2000ms
-  
+
   # Kafka Configuration
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
@@ -27,7 +27,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       auto-offset-reset: earliest
-  
+
   # JPA Configuration
   jpa:
     hibernate:
@@ -96,4 +96,3 @@ logging:
     com.eduflow: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-

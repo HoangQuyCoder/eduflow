@@ -23,8 +23,7 @@ public class NotificationController {
     }
     
     @GetMapping("/me")
-    public ResponseEntity<List<Notification>> getMyNotifications() {
-        UUID userId = UUID.randomUUID(); // Placeholder
+    public ResponseEntity<List<Notification>> getMyNotifications(@RequestHeader("X-User-Id") String userId) {
         return ResponseEntity.ok(notificationService.getNotificationsForUser(userId));
     }
 

@@ -20,23 +20,21 @@ public class EnrollmentController {
     }
 
     @PostMapping
-    public ResponseEntity<EnrollmentResponse> enroll(@RequestBody EnrollmentRequest request) {
-        // In a real app, extract userId from JWT/SecurityContext
-        // For now, using a dummy UUID or we should expect it from header
-        UUID userId = UUID.randomUUID(); 
-        return ResponseEntity.ok(enrollmentService.enroll(userId, request));
+    public ResponseEntity<EnrollmentResponse> enroll(@RequestBody EnrollmentRequest request, 
+        @RequestHeader("X-User-Id") String userId) {
+        EnrollmentResponse response = enrollmentService.enroll(userId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
     }
 
     @GetMapping
-    public ResponseEntity<List<EnrollmentResponse>> getMyEnrollments() {
-        UUID userId = UUID.randomUUID(); // Dummy
+    public ResponseEntity<List<EnrollmentResponse>> getMyEnrollments(@RequestHeader("X-User-Id") String userId) {
         return ResponseEntity.ok(enrollmentService.getUserEnrollments(userId));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EnrollmentResponse> getEnrollment(@PathVariable UUID id) {
-        // Implementation for details
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(enrollmentService.getEnrollmentById(id));
     }
 
     public EnrollmentService getEnrollmentService() {

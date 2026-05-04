@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class CourseRatingService {
+
+    private static final Logger log = LoggerFactory.getLogger(CourseRatingService.class);
 
     private final CourseRatingRepository courseRatingRepository;
     private final CourseRepository courseRepository;
@@ -165,8 +169,6 @@ public class CourseRatingService {
                 .createdAt(rating.getCreatedAt())
                 .build();
     }
-
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CourseRatingService.class);
 
     public CourseRatingRepository getCourseRatingRepository() {
         return courseRatingRepository;
