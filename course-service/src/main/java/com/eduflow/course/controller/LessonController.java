@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -18,6 +20,8 @@ import java.util.List;
 @RequestMapping("/api/v1/lessons")
 @Validated
 public class LessonController {
+
+    private static final Logger log = LoggerFactory.getLogger(LessonController.class);
 
     private final LessonService lessonService;
 
@@ -127,8 +131,6 @@ public class LessonController {
         Long count = lessonService.getLessonCountByCourseId(courseId);
         return ResponseEntity.ok(count);
     }
-
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LessonController.class);
 
     public LessonService getLessonService() {
         return lessonService;

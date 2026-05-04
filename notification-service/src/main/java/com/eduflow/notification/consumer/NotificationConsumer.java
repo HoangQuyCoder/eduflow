@@ -4,9 +4,13 @@ import com.eduflow.notification.event.EnrollmentEvent;
 import com.eduflow.notification.service.NotificationService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class NotificationConsumer {
+
+    private static final Logger log = LoggerFactory.getLogger(NotificationConsumer.class);
 
     private final NotificationService notificationService;
 
@@ -26,8 +30,6 @@ public class NotificationConsumer {
             );
         }
     }
-
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NotificationConsumer.class);
 
     public NotificationService getNotificationService() {
         return notificationService;

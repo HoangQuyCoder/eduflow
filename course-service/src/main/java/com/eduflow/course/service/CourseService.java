@@ -16,20 +16,26 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import com.eduflow.course.dto.external.UserDTO;
+import com.eduflow.course.feign.IdentityClient;
 
 @Service
 public class CourseService {
+
+    private static final Logger log = LoggerFactory.getLogger(CourseService.class);
 
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final com.eduflow.course.feign.IdentityClient identityClient;
+    private final IdentityClient identityClient;
 
     private static final String FEATURED_COURSES_CACHE_KEY = "featured:courses";
     private static final long CACHE_TTL = 3600; // 1 hour in seconds
@@ -319,7 +325,7 @@ public class CourseService {
     private CourseDTO mapToDTO(Course course) {
         String instructorName = "Unknown";
         try {
-            com.eduflow.course.dto.external.UserDTO instructor = identityClient.getUser(course.getInstructorId());
+            UserDTO instructor = identityClient.getUser(course.getInstructorId());
             if (instructor != null && instructor.getFullName() != null) {
                 instructorName = instructor.getFullName();
             }
@@ -354,28 +360,22 @@ public class CourseService {
     }
 
     private void publishCourseEvent(String courseId, String eventType) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        CourseEvent event = new CourseEvent(
+                courseId,
+                course.getInstructorId(),
+                eventType,
+                System.currentTimeMillis()
+        );
         try {
-            Course course = courseRepository.findById(courseId).orElse(null);
-            String instructorId = course != null ? course.getInstructorId() : "";
-            
-            String payload = String.format(
-                    "{\"courseId\":\"%s\",\"instructorId\":\"%s\",\"eventType\":\"%s\",\"timestamp\":%d}",
-                    courseId, instructorId, eventType, System.currentTimeMillis()
-            );
-
-            Message<String> message = MessageBuilder
-                    .withPayload(payload)
-                    .setHeader(KafkaHeaders.TOPIC, "course-events")
-                    .build();
-
-            kafkaTemplate.send(message);
-            log.info("Course event published: {}", eventType);
+            kafkaTemplate.send("course-events", event);
         } catch (Exception e) {
             log.error("Error publishing course event", e);
+            throw new RuntimeException(e);
         }
     }
-
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CourseService.class);
 
     public CourseRepository getCourseRepository() {
         return courseRepository;

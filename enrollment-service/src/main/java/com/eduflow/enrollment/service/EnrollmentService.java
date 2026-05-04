@@ -70,6 +70,12 @@ public class EnrollmentService {
                 .collect(Collectors.toList());
     }
 
+    public EnrollmentResponse getEnrollmentById(UUID enrollmentId) {
+        return enrollmentRepository.findById(enrollmentId)
+                .map(this::mapToResponse)
+                .orElse(null);
+    }
+    
     private EnrollmentResponse mapToResponse(Enrollment enrollment) {
         EnrollmentResponse response = new EnrollmentResponse();
         response.setId(enrollment.getId());
