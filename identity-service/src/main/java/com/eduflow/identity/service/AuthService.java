@@ -104,9 +104,9 @@ public class AuthService {
             throw new RuntimeException("Invalid refresh token");
         }
         String refreshToken = authHeader.substring(7);
-        String userEmail = jwtService.extractUsername(refreshToken);
-        if (userEmail != null) {
-            User user = userRepository.findByEmail(userEmail)
+        String userId = jwtService.extractUserId(refreshToken);
+        if (userId != null) {
+            User user = userRepository.findById(java.util.UUID.fromString(userId))
                     .orElseThrow(() -> new RuntimeException("User not found"));
             CustomUserDetails userDetails = new CustomUserDetails(user);
             if (jwtService.isTokenValid(refreshToken, userDetails)) {
