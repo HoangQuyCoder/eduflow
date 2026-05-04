@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/v1/courses")
@@ -95,6 +96,7 @@ public class CourseController {
      * Get all published courses with pagination
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<CourseDTO>> getAllCourses(
             @RequestParam(defaultValue = "0") @Min(0) Integer page,
             @RequestParam(defaultValue = "10") @Min(1) Integer size,
