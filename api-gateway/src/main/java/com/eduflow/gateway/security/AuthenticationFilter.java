@@ -7,6 +7,7 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import java.util.List;
 
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
@@ -37,9 +38,14 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             }
 
             String userId = jwtTokenProvider.getUserIdFromToken(token);
-            exchange.getRequest().mutate().header("X-User-Id", userId);
+            List<String> roles = jwtTokenProvider.getRolesFromToken(token);
 
-            log.info("Authenticated user: {}", userId);
+            exchange.getRequest().mutate()
+                    .header("X-User-Id", userId)
+                    .header("X-User-Roles", String.join(",", roles))
+                    .build();
+
+            log.info("Authenticated user: {}, roles: {}", userId, roles);
             return chain.filter(exchange);
         };
     }
