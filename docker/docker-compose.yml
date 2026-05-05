@@ -67,6 +67,19 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   # Microservices
+  config-server:
+    build:
+      context: ..
+      dockerfile: config-server/Dockerfile
+    container_name: config-server
+    ports:
+      - "${CONFIG_SERVER_PORT:-8888}:8888"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   eureka-server:
     build:
       context: ..
@@ -88,9 +101,13 @@ services:
     ports:
       - "${GATEWAY_PORT}:8080"
     depends_on:
+      config-server:
+        condition: service_healthy
       eureka-server:
         condition: service_healthy
     environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
       EUREKA_HOST: ${EUREKA_HOST}
       EUREKA_PORT: ${EUREKA_PORT}
       JWT_SECRET: ${JWT_SECRET}
@@ -102,11 +119,15 @@ services:
       dockerfile: identity-service/Dockerfile
     container_name: identity-service
     depends_on:
+      config-server:
+        condition: service_healthy
       postgres-identity:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
     environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
       POSTGRES_HOST: postgres-identity
       POSTGRES_PORT: 5432
       POSTGRES_USER: ${POSTGRES_USER}
@@ -122,6 +143,8 @@ services:
       dockerfile: course-service/Dockerfile
     container_name: course-service
     depends_on:
+      config-server:
+        condition: service_healthy
       mongodb:
         condition: service_started
       redis:
@@ -131,6 +154,8 @@ services:
       eureka-server:
         condition: service_healthy
     environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
       MONGO_HOST: ${MONGODB_HOST}
       MONGO_PORT: 27017
       MONGO_USER: ${MONGO_ROOT_USERNAME}
@@ -146,6 +171,8 @@ services:
       dockerfile: enrollment-service/Dockerfile
     container_name: enrollment-service
     depends_on:
+      config-server:
+        condition: service_healthy
       postgres-enrollment:
         condition: service_healthy
       kafka:
@@ -153,6 +180,8 @@ services:
       eureka-server:
         condition: service_healthy
     environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
       POSTGRES_HOST: postgres-enrollment
       POSTGRES_PORT: 5432
       POSTGRES_USER: ${POSTGRES_USER}
@@ -167,6 +196,8 @@ services:
       dockerfile: notification-service/Dockerfile
     container_name: notification-service
     depends_on:
+      config-server:
+        condition: service_healthy
       mongodb:
         condition: service_started
       kafka:
@@ -174,6 +205,8 @@ services:
       eureka-server:
         condition: service_healthy
     environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
       MONGO_HOST: ${MONGODB_HOST}
       MONGO_PORT: 27017
       MONGO_USER: ${MONGO_ROOT_USERNAME}
