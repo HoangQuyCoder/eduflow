@@ -16,22 +16,19 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
-            @Valid @RequestBody RegisterRequest request
-    ) {
+            @Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
-            @Valid @RequestBody LoginRequest request
-    ) {
+            @Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(
-            @RequestHeader("Authorization") String authHeader
-    ) {
+            @RequestHeader("Authorization") String authHeader) {
         return ResponseEntity.ok(authService.refreshToken(authHeader));
     }
 
@@ -39,7 +36,7 @@ public class AuthController {
     public ResponseEntity<Void> logout() {
         return ResponseEntity.ok().build();
     }
-    
+
     @GetMapping("/validate")
     public ResponseEntity<Void> validateToken() {
         return ResponseEntity.ok().build();
@@ -56,10 +53,10 @@ public class AuthController {
     public static AuthControllerBuilder builder() {
         return new AuthControllerBuilder();
     }
-    
+
     public static class AuthControllerBuilder {
         private AuthService authService;
-        
+
         public AuthControllerBuilder authService(AuthService authService) {
             this.authService = authService;
             return this;
@@ -68,9 +65,5 @@ public class AuthController {
         public AuthController build() {
             return new AuthController(authService);
         }
-    }
-
-    public void setAuthService(AuthService authService) {
-        this.authService = authService;
     }
 }

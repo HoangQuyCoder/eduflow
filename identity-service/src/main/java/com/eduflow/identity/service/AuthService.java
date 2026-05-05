@@ -44,11 +44,11 @@ public class AuthService {
                 .user(user)
                 .role(Role.STUDENT)
                 .build();
-        
+
         user.getRoles().add(defaultRole);
 
         User savedUser = userRepository.save(user);
-        
+
         UserProfile profile = UserProfile.builder()
                 .user(savedUser)
                 .build();
@@ -73,13 +73,11 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
-                        request.getPassword()
-                )
-        );
+                        request.getPassword()));
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        
+
         if (!Boolean.TRUE.equals(user.getAccountActive())) {
             throw new RuntimeException("User is not active");
         }
@@ -98,7 +96,7 @@ public class AuthService {
                         .collect(Collectors.toList()))
                 .build();
     }
-    
+
     public AuthResponse refreshToken(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Invalid refresh token");
@@ -145,7 +143,8 @@ public class AuthService {
         return authenticationManager;
     }
 
-    public AuthService(UserRepository userRepository, UserProfileRepository userProfileRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+    public AuthService(UserRepository userRepository, UserProfileRepository userProfileRepository,
+            PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.passwordEncoder = passwordEncoder;
@@ -156,10 +155,14 @@ public class AuthService {
     public static AuthServiceBuilder builder() {
         return new AuthServiceBuilder();
     }
-    
+
     public static class AuthServiceBuilder {
-        private UserRepository userRepository; private UserProfileRepository userProfileRepository; private PasswordEncoder passwordEncoder; private JwtService jwtService; private AuthenticationManager authenticationManager;
-        
+        private UserRepository userRepository;
+        private UserProfileRepository userProfileRepository;
+        private PasswordEncoder passwordEncoder;
+        private JwtService jwtService;
+        private AuthenticationManager authenticationManager;
+
         public AuthServiceBuilder userRepository(UserRepository userRepository) {
             this.userRepository = userRepository;
             return this;
@@ -186,11 +189,8 @@ public class AuthService {
         }
 
         public AuthService build() {
-            return new AuthService(userRepository, userProfileRepository, passwordEncoder, jwtService, authenticationManager);
+            return new AuthService(userRepository, userProfileRepository, passwordEncoder, jwtService,
+                    authenticationManager);
         }
-    }
-
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
     }
 }

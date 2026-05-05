@@ -48,9 +48,9 @@ public class JwtService {
         if (extraClaims == null) {
             extraClaims = new HashMap<>();
         }
-        
+
         CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-        
+
         extraClaims.put("roles", userDetails.getAuthorities().stream()
                 .map(grantedAuthority -> grantedAuthority.getAuthority())
                 .collect(Collectors.toList()));
@@ -65,8 +65,9 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        final String userId = extractUserId(token);
+        String targetId = ((CustomUserDetails) userDetails).getUser().getId().toString();
+        return (userId.equals(targetId)) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

@@ -19,7 +19,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(user);
     }
 
-
     public UserRepository getUserRepository() {
         return userRepository;
     }
@@ -31,10 +30,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     public static CustomUserDetailsServiceBuilder builder() {
         return new CustomUserDetailsServiceBuilder();
     }
-    
+
     public static class CustomUserDetailsServiceBuilder {
         private UserRepository userRepository;
-        
+
         public CustomUserDetailsServiceBuilder userRepository(UserRepository userRepository) {
             this.userRepository = userRepository;
             return this;
@@ -43,9 +42,5 @@ public class CustomUserDetailsService implements UserDetailsService {
         public CustomUserDetailsService build() {
             return new CustomUserDetailsService(userRepository);
         }
-    }
-
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
     }
 }

@@ -23,9 +23,9 @@ public class EnrollmentService {
     private final CourseClient courseClient;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public EnrollmentService(EnrollmentRepository enrollmentRepository, 
-                             CourseClient courseClient, 
-                             KafkaTemplate<String, Object> kafkaTemplate) {
+    public EnrollmentService(EnrollmentRepository enrollmentRepository,
+            CourseClient courseClient,
+            KafkaTemplate<String, Object> kafkaTemplate) {
         this.enrollmentRepository = enrollmentRepository;
         this.courseClient = courseClient;
         this.kafkaTemplate = kafkaTemplate;
@@ -36,7 +36,10 @@ public class EnrollmentService {
     public EnrollmentResponse enroll(UUID userId, EnrollmentRequest request) {
         // Validate course existence via Feign
         CourseDTO course = courseClient.getCourse(request.getCourseId());
-        
+        if (course == null) {
+            throw new RuntimeException("Course not found");
+        }
+
         // Check if already enrolled
         if (enrollmentRepository.findByUserIdAndCourseId(userId, request.getCourseId()).isPresent()) {
             throw new RuntimeException("User already enrolled in this course");
@@ -45,23 +48,23 @@ public class EnrollmentService {
         Enrollment enrollment = new Enrollment();
         enrollment.setUserId(userId);
         enrollment.setCourseId(request.getCourseId());
-        
+
         Enrollment saved = enrollmentRepository.save(enrollment);
 
         // Publish Kafka Event
         EnrollmentEvent event = new EnrollmentEvent(
-            saved.getId(), 
-            saved.getUserId(), 
-            saved.getCourseId(), 
-            "ENROLLMENT_CREATED"
-        );
+                saved.getId(),
+                saved.getUserId(),
+                saved.getCourseId(),
+                "ENROLLMENT_CREATED");
         kafkaTemplate.send("enrollment-events", event);
 
         return mapToResponse(saved);
     }
 
     public EnrollmentResponse fallbackEnroll(UUID userId, EnrollmentRequest request, Throwable t) {
-        throw new RuntimeException("Course Service is currently unavailable. Please try again later. " + t.getMessage());
+        throw new RuntimeException(
+                "Course Service is currently unavailable. Please try again later. " + t.getMessage());
     }
 
     public List<EnrollmentResponse> getUserEnrollments(UUID userId) {
@@ -75,7 +78,7 @@ public class EnrollmentService {
                 .map(this::mapToResponse)
                 .orElse(null);
     }
-    
+
     private EnrollmentResponse mapToResponse(Enrollment enrollment) {
         EnrollmentResponse response = new EnrollmentResponse();
         response.setId(enrollment.getId());

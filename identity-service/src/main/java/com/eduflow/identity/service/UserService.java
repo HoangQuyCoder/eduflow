@@ -34,16 +34,16 @@ public class UserService {
     public UserDTO updateUser(UUID id, UserDTO userDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        
+
         if (userDTO.getFullName() != null) {
             user.setFullName(userDTO.getFullName());
         }
-        
+
         UserProfile profile = user.getProfile();
         if (profile == null) {
             profile = UserProfile.builder().user(user).build();
         }
-        
+
         if (userDTO.getAvatarUrl() != null) {
             profile.setAvatarUrl(userDTO.getAvatarUrl());
         }
@@ -53,7 +53,7 @@ public class UserService {
         if (userDTO.getPhone() != null) {
             profile.setPhone(userDTO.getPhone());
         }
-        
+
         userProfileRepository.save(profile);
         return mapToDTO(userRepository.save(user));
     }
@@ -89,10 +89,11 @@ public class UserService {
     public static UserServiceBuilder builder() {
         return new UserServiceBuilder();
     }
-    
+
     public static class UserServiceBuilder {
-        private UserRepository userRepository; private UserProfileRepository userProfileRepository;
-        
+        private UserRepository userRepository;
+        private UserProfileRepository userProfileRepository;
+
         public UserServiceBuilder userRepository(UserRepository userRepository) {
             this.userRepository = userRepository;
             return this;
@@ -106,9 +107,5 @@ public class UserService {
         public UserService build() {
             return new UserService(userRepository, userProfileRepository);
         }
-    }
-
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
     }
 }

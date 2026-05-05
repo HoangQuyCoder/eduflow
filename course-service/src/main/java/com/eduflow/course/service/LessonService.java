@@ -101,7 +101,7 @@ public class LessonService {
     public void deleteLesson(String lessonId) {
         log.info("Deleting lesson with ID: {}", lessonId);
 
-        Lesson lesson = lessonRepository.findById(lessonId)
+        lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new LessonNotFoundException("Lesson not found with ID: " + lessonId));
 
         lessonRepository.deleteById(lessonId);

@@ -3,6 +3,7 @@ package com.eduflow.course.service;
 import com.eduflow.course.dto.CourseDTO;
 import com.eduflow.course.entity.Course;
 import com.eduflow.course.entity.Lesson;
+import com.eduflow.course.event.CourseEvent;
 import com.eduflow.course.exception.CourseNotFoundException;
 import com.eduflow.course.exception.UnauthorizedException;
 import com.eduflow.course.repository.CourseRepository;
@@ -11,9 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
@@ -34,7 +32,7 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final IdentityClient identityClient;
 
     private static final String FEATURED_COURSES_CACHE_KEY = "featured:courses";
@@ -95,10 +93,10 @@ public class CourseService {
         course.setUpdatedAt(LocalDateTime.now());
 
         Course updatedCourse = courseRepository.save(course);
-        
+
         // Clear cache
         clearFeaturedCoursesCache();
-        
+
         log.info("Course updated successfully with ID: {}", courseId);
         return mapToDTO(updatedCourse);
     }
@@ -193,7 +191,7 @@ public class CourseService {
      */
     public Page<CourseDTO> getAllCourses(Pageable pageable) {
         log.info("Fetching all published courses");
-        
+
         return courseRepository.findByIsPublishedTrue(pageable)
                 .map(this::mapToDTO);
     }
@@ -203,7 +201,7 @@ public class CourseService {
      */
     public Page<CourseDTO> getCoursesByCategory(String category, Pageable pageable) {
         log.info("Fetching courses by category: {}", category);
-        
+
         return courseRepository.findByCategoryAndIsPublishedTrue(category, pageable)
                 .map(this::mapToDTO);
     }
@@ -213,7 +211,7 @@ public class CourseService {
      */
     public Page<CourseDTO> getCoursesByLevel(String level, Pageable pageable) {
         log.info("Fetching courses by level: {}", level);
-        
+
         return courseRepository.findByLevelAndIsPublishedTrue(level, pageable)
                 .map(this::mapToDTO);
     }
@@ -223,7 +221,7 @@ public class CourseService {
      */
     public Page<CourseDTO> searchCourses(String title, Pageable pageable) {
         log.info("Searching courses with title: {}", title);
-        
+
         return courseRepository.findByTitleContainingIgnoreCaseAndIsPublishedTrue(title, pageable)
                 .map(this::mapToDTO);
     }
@@ -231,6 +229,7 @@ public class CourseService {
     /**
      * Get featured courses (cached)
      */
+    @SuppressWarnings("unchecked")
     public List<CourseDTO> getFeaturedCourses() {
         log.info("Fetching featured courses");
 
@@ -261,7 +260,7 @@ public class CourseService {
      */
     public Page<CourseDTO> getCoursesByInstructor(String instructorId, Pageable pageable) {
         log.info("Fetching courses by instructor: {}", instructorId);
-        
+
         return courseRepository.findByInstructorIdAndIsPublishedTrue(instructorId, pageable)
                 .map(this::mapToDTO);
     }
@@ -271,7 +270,7 @@ public class CourseService {
      */
     public List<CourseDTO> getAllCoursesByInstructorInternal(String instructorId) {
         log.info("Fetching all courses (internal) by instructor: {}", instructorId);
-        
+
         return courseRepository.findByInstructorId(instructorId)
                 .stream()
                 .map(this::mapToDTO)
@@ -367,8 +366,7 @@ public class CourseService {
                 courseId,
                 course.getInstructorId(),
                 eventType,
-                System.currentTimeMillis()
-        );
+                System.currentTimeMillis());
         try {
             kafkaTemplate.send("course-events", event);
         } catch (Exception e) {
@@ -389,11 +387,17 @@ public class CourseService {
         return redisTemplate;
     }
 
-    public KafkaTemplate<String, String> getKafkaTemplate() {
+    public KafkaTemplate<String, Object> getKafkaTemplate() {
         return kafkaTemplate;
     }
 
-    public CourseService(CourseRepository courseRepository, LessonRepository lessonRepository, RedisTemplate<String, Object> redisTemplate, KafkaTemplate<String, String> kafkaTemplate, com.eduflow.course.feign.IdentityClient identityClient) {
+    public IdentityClient getIdentityClient() {
+        return identityClient;
+    }
+
+    public CourseService(CourseRepository courseRepository, LessonRepository lessonRepository,
+            RedisTemplate<String, Object> redisTemplate, KafkaTemplate<String, Object> kafkaTemplate,
+            com.eduflow.course.feign.IdentityClient identityClient) {
         this.courseRepository = courseRepository;
         this.lessonRepository = lessonRepository;
         this.redisTemplate = redisTemplate;
