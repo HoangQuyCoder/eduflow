@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: notification-service-test
+  cloud:
+    config:
+      enabled: false
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/notification_db_test
+  kafka:
+    bootstrap-servers: localhost:9092
+
+eureka:
+  client:
+    enabled: false
