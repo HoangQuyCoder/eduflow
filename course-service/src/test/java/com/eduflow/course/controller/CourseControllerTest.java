@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Arrays;
 
@@ -87,6 +88,7 @@ class CourseControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void testGetAllCourses() throws Exception {
         // Arrange
         Page<CourseDTO> page = new PageImpl<>(Arrays.asList(courseDTO));

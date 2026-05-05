@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: identity-service-test
+  cloud:
+    config:
+      enabled: false
+  datasource:
+    url: jdbc:h2:mem:identity_db;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+
+eureka:
+  client:
+    enabled: false
