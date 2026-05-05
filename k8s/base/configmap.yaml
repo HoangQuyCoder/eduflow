@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eduflow-config
+  namespace: eduflow
+data:
+  EUREKA_HOST: "eureka-service"
+  EUREKA_PORT: "8761"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+  REDIS_HOST: "redis-service"
+  MONGODB_HOST: "mongodb-service"
+  POSTGRES_IDENTITY_HOST: "postgres-identity-service"
+  POSTGRES_ENROLLMENT_HOST: "postgres-enrollment-service"

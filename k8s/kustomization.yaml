@@ -1,0 +1,22 @@
+namespace: eduflow
+resources:
+  - base/namespace.yaml
+  - base/configmap.yaml
+  - base/secret.yaml
+  - infrastructure/pvc.yaml
+
+  - infrastructure/postgres-identity.yaml
+  - infrastructure/postgres-enrollment.yaml
+  - infrastructure/mongodb.yaml
+  - infrastructure/redis.yaml
+  - infrastructure/zookeeper.yaml
+  - infrastructure/kafka.yaml
+
+  - services/eureka.yaml
+  - services/api-gateway.yaml
+  - services/identity.yaml
+  - services/course.yaml
+  - services/enrollment.yaml
+  - services/notification.yaml
+
+  - ingress/ingress.yaml

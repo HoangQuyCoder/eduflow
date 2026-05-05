@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.List;
+import java.util.Objects;
 
 @Component
 public class JwtTokenProvider {
@@ -33,6 +35,20 @@ public class JwtTokenProvider {
         return getClaimsFromToken(token).getSubject();
     }
 
+    public List<String> getRolesFromToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        Object rolesObj = claims.get("roles");
+
+        if (!(rolesObj instanceof List<?> rolesList)) {
+            return List.of();
+        }
+
+        return rolesList.stream()
+                .filter(Objects::nonNull)
+                .map(Object::toString)
+                .toList();
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
@@ -43,5 +59,21 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public long getExpiration() {
+        return expiration;
+    }
+
+    public void setExpiration(long expiration) {
+        this.expiration = expiration;
     }
 }
