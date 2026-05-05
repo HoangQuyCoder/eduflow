@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-  # Infrastructure
   postgres-identity:
     image: postgres:15-alpine
     container_name: postgres-identity
@@ -72,7 +69,8 @@ services:
   # Microservices
   eureka-server:
     build:
-      context: ../eureka-server
+      context: ..
+      dockerfile: eureka-server/Dockerfile
     container_name: eureka-server
     ports:
       - "${EUREKA_PORT}:8761"
@@ -84,7 +82,8 @@ services:
 
   api-gateway:
     build:
-      context: ../api-gateway
+      context: ..
+      dockerfile: api-gateway/Dockerfile
     container_name: api-gateway
     ports:
       - "${GATEWAY_PORT}:8080"
@@ -99,7 +98,8 @@ services:
 
   identity-service:
     build:
-      context: ../identity-service
+      context: ..
+      dockerfile: identity-service/Dockerfile
     container_name: identity-service
     depends_on:
       postgres-identity:
@@ -118,7 +118,8 @@ services:
 
   course-service:
     build:
-      context: ../course-service
+      context: ..
+      dockerfile: course-service/Dockerfile
     container_name: course-service
     depends_on:
       mongodb:
@@ -141,7 +142,8 @@ services:
 
   enrollment-service:
     build:
-      context: ../enrollment-service
+      context: ..
+      dockerfile: enrollment-service/Dockerfile
     container_name: enrollment-service
     depends_on:
       postgres-enrollment:
@@ -161,7 +163,8 @@ services:
 
   notification-service:
     build:
-      context: ../notification-service
+      context: ..
+      dockerfile: notification-service/Dockerfile
     container_name: notification-service
     depends_on:
       mongodb:

@@ -60,10 +60,10 @@ public class CustomUserDetails implements UserDetails {
     public static CustomUserDetailsBuilder builder() {
         return new CustomUserDetailsBuilder();
     }
-    
+
     public static class CustomUserDetailsBuilder {
         private User user;
-        
+
         public CustomUserDetailsBuilder user(User user) {
             this.user = user;
             return this;
@@ -72,9 +72,5 @@ public class CustomUserDetails implements UserDetails {
         public CustomUserDetails build() {
             return new CustomUserDetails(user);
         }
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

@@ -1,10 +1,8 @@
 package com.eduflow.course.dto;
 
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Max;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -181,9 +179,13 @@ public class CourseDTO {
         this.updatedAt = updatedAt;
     }
 
-    public CourseDTO() {}
+    public CourseDTO() {
+    }
 
-    public CourseDTO(String id, String title, String description, String instructorId, String instructorName, Double price, String category, String level, Integer duration, String thumbnail, Boolean isPublished, List<String> lessonIds, Double averageRating, Integer totalReviews, Integer enrollmentCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public CourseDTO(String id, String title, String description, String instructorId, String instructorName,
+            Double price, String category, String level, Integer duration, String thumbnail, Boolean isPublished,
+            List<String> lessonIds, Double averageRating, Integer totalReviews, Integer enrollmentCount,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -206,10 +208,26 @@ public class CourseDTO {
     public static CourseDTOBuilder builder() {
         return new CourseDTOBuilder();
     }
-    
+
     public static class CourseDTOBuilder {
-        private String id; private String title; private String description; private String instructorId; private String instructorName; private Double price; private String category; private String level; private Integer duration; private String thumbnail; private Boolean isPublished; private List<String> lessonIds; private Double averageRating; private Integer totalReviews; private Integer enrollmentCount; private LocalDateTime createdAt; private LocalDateTime updatedAt;
-        
+        private String id;
+        private String title;
+        private String description;
+        private String instructorId;
+        private String instructorName;
+        private Double price;
+        private String category;
+        private String level;
+        private Integer duration;
+        private String thumbnail;
+        private Boolean isPublished;
+        private List<String> lessonIds;
+        private Double averageRating;
+        private Integer totalReviews;
+        private Integer enrollmentCount;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+
         public CourseDTOBuilder id(String id) {
             this.id = id;
             return this;
@@ -296,7 +314,9 @@ public class CourseDTO {
         }
 
         public CourseDTO build() {
-            return new CourseDTO(id, title, description, instructorId, instructorName, price, category, level, duration, thumbnail, isPublished, lessonIds, averageRating, totalReviews, enrollmentCount, createdAt, updatedAt);
+            return new CourseDTO(id, title, description, instructorId, instructorName, price, category, level, duration,
+                    thumbnail, isPublished, lessonIds, averageRating, totalReviews, enrollmentCount, createdAt,
+                    updatedAt);
         }
     }
 }

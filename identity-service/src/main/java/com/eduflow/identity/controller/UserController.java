@@ -23,8 +23,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
             @PathVariable UUID id,
-            @RequestBody UserDTO userDTO
-    ) {
+            @RequestBody UserDTO userDTO) {
         return ResponseEntity.ok(userService.updateUser(id, userDTO));
     }
 
@@ -45,10 +44,10 @@ public class UserController {
     public static UserControllerBuilder builder() {
         return new UserControllerBuilder();
     }
-    
+
     public static class UserControllerBuilder {
         private UserService userService;
-        
+
         public UserControllerBuilder userService(UserService userService) {
             this.userService = userService;
             return this;
@@ -57,9 +56,5 @@ public class UserController {
         public UserController build() {
             return new UserController(userService);
         }
-    }
-
-    public void setUserService(UserService userService) {
-        this.userService = userService;
     }
 }

@@ -5,6 +5,7 @@ import com.eduflow.notification.service.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,9 +22,9 @@ public class NotificationController {
     public ResponseEntity<List<Notification>> getUserNotifications(@PathVariable UUID userId) {
         return ResponseEntity.ok(notificationService.getNotificationsForUser(userId));
     }
-    
+
     @GetMapping("/me")
-    public ResponseEntity<List<Notification>> getMyNotifications(@RequestHeader("X-User-Id") String userId) {
+    public ResponseEntity<List<Notification>> getMyNotifications(@RequestHeader("X-User-Id") UUID userId) {
         return ResponseEntity.ok(notificationService.getNotificationsForUser(userId));
     }
 
