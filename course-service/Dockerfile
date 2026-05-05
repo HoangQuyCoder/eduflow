@@ -5,6 +5,8 @@ FROM maven:3.9.6-eclipse-temurin-21 AS builder
 WORKDIR /build
 
 COPY pom.xml .
+RUN mvn install -N -B
+
 COPY course-service/pom.xml course-service/
 RUN mvn -f course-service/pom.xml dependency:go-offline -B
 

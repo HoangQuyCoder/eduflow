@@ -4,17 +4,13 @@
 FROM maven:3.9.6-eclipse-temurin-21 AS builder
 WORKDIR /build
 
-# Copy pom files first for dependency caching
 COPY pom.xml .
-COPY eureka-server/pom.xml eureka-server/
+RUN mvn install -N -B
 
-# Download dependencies (this layer will be cached)
+COPY eureka-server/pom.xml eureka-server/
 RUN mvn -f eureka-server/pom.xml dependency:go-offline -B
 
-# Copy source code
 COPY eureka-server/src eureka-server/src
-
-# Build
 RUN mvn -f eureka-server/pom.xml clean package -DskipTests -B
 
 # ======================
