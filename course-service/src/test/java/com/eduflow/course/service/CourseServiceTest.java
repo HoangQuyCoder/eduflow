@@ -98,7 +98,7 @@ class CourseServiceTest {
         // Arrange
         when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
         when(courseRepository.save(any(Course.class))).thenReturn(course);
-        doNothing().when(redisTemplate).delete(anyString());
+        when(redisTemplate.delete(anyString())).thenReturn(true);
 
         // Act
         CourseDTO result = courseService.updateCourse(courseId, courseDTO, instructorId);
@@ -136,7 +136,7 @@ class CourseServiceTest {
         when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
         doNothing().when(lessonRepository).deleteByCourseId(courseId);
         doNothing().when(courseRepository).deleteById(courseId);
-        doNothing().when(redisTemplate).delete(anyString());
+        when(redisTemplate.delete(anyString())).thenReturn(true);
 
         // Act & Assert
         assertDoesNotThrow(() -> {
