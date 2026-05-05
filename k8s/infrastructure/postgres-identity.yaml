@@ -30,6 +30,13 @@ spec:
             secretKeyRef:
               name: eduflow-secrets
               key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: postgres-identity-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-identity-storage
+        persistentVolumeClaim:
+          claimName: postgres-identity-pvc
 ---
 apiVersion: v1
 kind: Service

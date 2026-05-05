@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enrollment-service
+  namespace: eduflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: enrollment-service
+  template:
+    metadata:
+      labels:
+        app: enrollment-service
+    spec:
+      containers:
+        - name: enrollment-service
+          image: ghcr.io/${GITHUB_REPOSITORY}/enrollment-service:latest
+          ports:
+            - containerPort: 8083
+          env:
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: eduflow-config
+                  key: POSTGRES_ENROLLMENT_HOST
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: eduflow-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: eduflow-secrets
+                  key: POSTGRES_PASSWORD
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: eduflow-config
+                  key: KAFKA_BOOTSTRAP_SERVERS
+            - name: EUREKA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: eduflow-config
+                  key: EUREKA_HOST
+            - name: EUREKA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: eduflow-config
+                  key: EUREKA_PORT
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 60
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: enrollment-service
+  namespace: eduflow
+spec:
+  selector:
+    app: enrollment-service
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083
