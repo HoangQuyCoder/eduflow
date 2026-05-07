@@ -15,4 +15,4 @@ spring:
         spring.json.value.default.type: "com.eduflow.notification.event.EnrollmentEvent"
 
 server:
-  port: 8085
+  port: 8084
