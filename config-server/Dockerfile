@@ -18,6 +18,7 @@ RUN mvn -f config-server/pom.xml clean package -DskipTests -B
 # ======================
 FROM eclipse-temurin:21-jre-jammy
 
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 RUN useradd -m appuser
 WORKDIR /app
 

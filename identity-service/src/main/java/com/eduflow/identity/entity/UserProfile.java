@@ -30,8 +30,15 @@ public class UserProfile {
     private LocalDateTime updatedAt;
 
     @PrePersist
+    public void onCreate() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+        this.updatedAt = LocalDateTime.now();
+    }
+
     @PreUpdate
-    public void preUpdate() {
+    public void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 

@@ -5,6 +5,7 @@ import com.eduflow.identity.entity.User;
 import com.eduflow.identity.entity.UserProfile;
 import com.eduflow.identity.repository.UserProfileRepository;
 import com.eduflow.identity.repository.UserRepository;
+import com.eduflow.identity.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,7 @@ public class UserService {
 
     public UserDTO getUserById(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return mapToDTO(user);
     }
 
@@ -33,7 +34,7 @@ public class UserService {
     @Transactional
     public UserDTO updateUser(UUID id, UserDTO userDTO) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
         if (userDTO.getFullName() != null) {
             user.setFullName(userDTO.getFullName());
@@ -65,7 +66,10 @@ public class UserService {
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .isActive(user.getAccountActive())
-                .roles(user.getRoles().stream().map(r -> r.getRole().name()).collect(Collectors.toList()))
+                .roles(user.getRoles().stream()
+                        .filter(r -> r.getRole() != null)
+                        .map(r -> r.getRole().name())
+                        .collect(Collectors.toList()))
                 .avatarUrl(profile != null ? profile.getAvatarUrl() : null)
                 .bio(profile != null ? profile.getBio() : null)
                 .phone(profile != null ? profile.getPhone() : null)

@@ -18,12 +18,13 @@ RUN mvn -f identity-service/pom.xml clean package -DskipTests -B
 # ======================
 FROM eclipse-temurin:21-jre-jammy
 
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 RUN useradd -m appuser
 WORKDIR /app
 
 COPY --from=builder --chown=appuser:appuser /build/identity-service/target/*.jar app.jar
 
 USER appuser
-EXPOSE 8080
+EXPOSE 8081
 
 ENTRYPOINT ["java","-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-XX:InitialRAMPercentage=50.0", "-jar", "app.jar"]
