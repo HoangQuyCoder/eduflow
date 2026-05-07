@@ -34,33 +34,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        final String userId = request.getHeader("X-User-Id");
-        final String rolesHeader = request.getHeader("X-User-Roles");
+        try {
+            final String userId = request.getHeader("X-User-Id");
+            final String rolesHeader = request.getHeader("X-User-Roles");
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null
-                && userId != null
-                && rolesHeader != null
-                && !rolesHeader.isBlank()) {
+            if (SecurityContextHolder.getContext().getAuthentication() == null
+                    && userId != null
+                    && rolesHeader != null
+                    && !rolesHeader.isBlank()) {
 
-            logger.debug("Authenticating user from Gateway headers: {}", userId);
+                logger.debug("Authenticating user from Gateway headers: {}", userId);
 
-            List<SimpleGrantedAuthority> authorities = Arrays.stream(rolesHeader.split(","))
-                    .filter(role -> !role.isBlank())
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
+                List<SimpleGrantedAuthority> authorities = Arrays.stream(rolesHeader.split(","))
+                        .filter(role -> !role.isBlank())
+                        .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
 
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
-                            userId,
-                            null,
-                            authorities
-                    );
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userId,
+                                null,
+                                authorities
+                        );
 
-            authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
+                authToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
 
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        } catch (Exception e) {
+            logger.error("Could not set user authentication in security context", e);
         }
 
         filterChain.doFilter(request, response);

@@ -131,7 +131,7 @@ public class User {
         this.passwordHash = passwordHash;
         this.fullName = fullName;
         this.accountActive = accountActive;
-        this.roles = roles;
+        this.roles = (roles != null) ? roles : new HashSet<>();
         this.profile = profile;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -142,7 +142,15 @@ public class User {
     }
     
     public static class UserBuilder {
-        private UUID id; private String email; private String passwordHash; private String fullName; private Boolean accountActive; private Set<UserRole> roles; private UserProfile profile; private LocalDateTime createdAt; private LocalDateTime updatedAt;
+        private UUID id; 
+        private String email; 
+        private String passwordHash; 
+        private String fullName; 
+        private Boolean accountActive; 
+        private Set<UserRole> roles = new HashSet<>(); 
+        private UserProfile profile; 
+        private LocalDateTime createdAt; 
+        private LocalDateTime updatedAt;
         
         public UserBuilder id(UUID id) {
             this.id = id;

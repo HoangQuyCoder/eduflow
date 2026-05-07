@@ -74,11 +74,38 @@ services:
     container_name: eureka-server
     ports:
       - "${EUREKA_PORT}:8761"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
       interval: 20s
       timeout: 5s
       retries: 5
+
+  config-server:
+    build:
+      context: ..
+      dockerfile: config-server/Dockerfile
+    container_name: config-server
+    ports:
+      - "${CONFIG_SERVER_PORT}:8888"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    environment:
+      EUREKA_HOST: ${EUREKA_HOST}
+      EUREKA_PORT: ${EUREKA_PORT}
 
   api-gateway:
     build:
@@ -90,9 +117,17 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     environment:
       EUREKA_HOST: ${EUREKA_HOST}
       EUREKA_PORT: ${EUREKA_PORT}
+      CONFIG_SERVER_HOST: ${CONFIG_SERVER_HOST}
+      CONFIG_SERVER_PORT: ${CONFIG_SERVER_PORT}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
 
@@ -106,6 +141,12 @@ services:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 768M
     environment:
       POSTGRES_HOST: postgres-identity
       POSTGRES_PORT: 5432
@@ -113,6 +154,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       EUREKA_HOST: ${EUREKA_HOST}
       EUREKA_PORT: ${EUREKA_PORT}
+      CONFIG_SERVER_HOST: ${CONFIG_SERVER_HOST}
+      CONFIG_SERVER_PORT: ${CONFIG_SERVER_PORT}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
 
@@ -130,6 +173,12 @@ services:
         condition: service_started
       eureka-server:
         condition: service_healthy
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 768M
     environment:
       MONGO_HOST: ${MONGODB_HOST}
       MONGO_PORT: 27017
@@ -139,6 +188,8 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       EUREKA_HOST: ${EUREKA_HOST}
       EUREKA_PORT: ${EUREKA_PORT}
+      CONFIG_SERVER_HOST: ${CONFIG_SERVER_HOST}
+      CONFIG_SERVER_PORT: ${CONFIG_SERVER_PORT}
 
   enrollment-service:
     build:
@@ -152,6 +203,12 @@ services:
         condition: service_started
       eureka-server:
         condition: service_healthy
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 768M
     environment:
       POSTGRES_HOST: postgres-enrollment
       POSTGRES_PORT: 5432
@@ -160,6 +217,8 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       EUREKA_HOST: ${EUREKA_HOST}
       EUREKA_PORT: ${EUREKA_PORT}
+      CONFIG_SERVER_HOST: ${CONFIG_SERVER_HOST}
+      CONFIG_SERVER_PORT: ${CONFIG_SERVER_PORT}
 
   notification-service:
     build:
@@ -173,6 +232,12 @@ services:
         condition: service_started
       eureka-server:
         condition: service_healthy
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 768M
     environment:
       MONGO_HOST: ${MONGODB_HOST}
       MONGO_PORT: 27017
@@ -181,3 +246,5 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       EUREKA_HOST: ${EUREKA_HOST}
       EUREKA_PORT: ${EUREKA_PORT}
+      CONFIG_SERVER_HOST: ${CONFIG_SERVER_HOST}
+      CONFIG_SERVER_PORT: ${CONFIG_SERVER_PORT}
