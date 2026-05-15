@@ -4,6 +4,8 @@ import com.eduflow.enrollment.dto.EnrollmentRequest;
 import com.eduflow.enrollment.dto.EnrollmentResponse;
 import com.eduflow.enrollment.service.EnrollmentService;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +15,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/enrollments")
+@RequiredArgsConstructor
+@Slf4j
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
-
-    public EnrollmentController(EnrollmentService enrollmentService) {
-        this.enrollmentService = enrollmentService;
-    }
 
     @PostMapping
     public ResponseEntity<EnrollmentResponse> enroll(@RequestBody EnrollmentRequest request,
@@ -39,7 +39,5 @@ public class EnrollmentController {
         return ResponseEntity.ok(enrollmentService.getEnrollmentById(id));
     }
 
-    public EnrollmentService getEnrollmentService() {
-        return enrollmentService;
-    }
 }
+

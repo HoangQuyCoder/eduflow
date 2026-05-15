@@ -10,7 +10,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
@@ -27,20 +30,12 @@ public class NotificationService {
                 .createdAt(LocalDateTime.now())
                 .sentAt(LocalDateTime.now())
                 .build();
-        
+
         notificationRepository.save(notification);
         log.info("Sent {} notification to user {}: {}", type, recipientId, title);
     }
 
     public List<Notification> getNotificationsForUser(UUID userId) {
         return notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId);
-    }
-
-    public NotificationRepository getNotificationRepository() {
-        return notificationRepository;
-    }
-
-    public NotificationService(NotificationRepository notificationRepository) {
-        this.notificationRepository = notificationRepository;
     }
 }

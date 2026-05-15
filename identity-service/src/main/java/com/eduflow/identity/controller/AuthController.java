@@ -5,11 +5,13 @@ import com.eduflow.identity.dto.LoginRequest;
 import com.eduflow.identity.dto.RegisterRequest;
 import com.eduflow.identity.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
@@ -41,29 +43,5 @@ public class AuthController {
     public ResponseEntity<Void> validateToken() {
         return ResponseEntity.ok().build();
     }
-
-    public AuthService getAuthService() {
-        return authService;
-    }
-
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
-
-    public static AuthControllerBuilder builder() {
-        return new AuthControllerBuilder();
-    }
-
-    public static class AuthControllerBuilder {
-        private AuthService authService;
-
-        public AuthControllerBuilder authService(AuthService authService) {
-            this.authService = authService;
-            return this;
-        }
-
-        public AuthController build() {
-            return new AuthController(authService);
-        }
-    }
 }
+
