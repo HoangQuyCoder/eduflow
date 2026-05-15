@@ -1,5 +1,7 @@
 package com.eduflow.identity.security;
 
+import lombok.Getter;
+import lombok.Setter;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -15,6 +17,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Getter
+@Setter
 public class JwtService {
 
     @Value("${jwt.secret}")
@@ -90,19 +94,5 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
-
-    public long getJwtExpiration() {
-        return jwtExpiration;
-    }
-
-    public void setJwtExpiration(long jwtExpiration) {
-        this.jwtExpiration = jwtExpiration;
-    }
 }
+

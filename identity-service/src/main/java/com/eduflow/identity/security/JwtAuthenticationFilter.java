@@ -1,12 +1,10 @@
 package com.eduflow.identity.security;
 
+import lombok.extern.slf4j.Slf4j;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,9 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
     protected void doFilterInternal(
@@ -43,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     && rolesHeader != null
                     && !rolesHeader.isBlank()) {
 
-                logger.debug("Authenticating user from Gateway headers: {}", userId);
+                log.debug("Authenticating user from Gateway headers: {}", userId);
 
                 List<SimpleGrantedAuthority> authorities = Arrays.stream(rolesHeader.split(","))
                         .filter(role -> !role.isBlank())
@@ -65,8 +62,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         } catch (Exception e) {
-            logger.error("Could not set user authentication in security context", e);
+            log.error("Could not set user authentication in security context", e);
         }
+
 
         filterChain.doFilter(request, response);
     }
