@@ -16,11 +16,15 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/lessons")
 @Validated
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Lesson Management", description = "Endpoints for managing course lessons")
 public class LessonController {
 
     private final LessonService lessonService;
@@ -28,6 +32,7 @@ public class LessonController {
     /**
      * Create a new lesson
      */
+    @Operation(summary = "Create a new lesson")
     @PostMapping
     public ResponseEntity<LessonDTO> createLesson(@Valid @RequestBody LessonDTO lessonDTO) {
         log.info("Creating lesson for course: {}", lessonDTO.getCourseId());
@@ -39,6 +44,7 @@ public class LessonController {
     /**
      * Update a lesson
      */
+    @Operation(summary = "Update a lesson")
     @PutMapping("/{lessonId}")
     public ResponseEntity<LessonDTO> updateLesson(
             @PathVariable String lessonId,
@@ -52,6 +58,7 @@ public class LessonController {
     /**
      * Publish or unpublish a lesson
      */
+    @Operation(summary = "Publish or unpublish a lesson")
     @PatchMapping("/{lessonId}/publish")
     public ResponseEntity<LessonDTO> publishLesson(
             @PathVariable String lessonId,
@@ -65,6 +72,7 @@ public class LessonController {
     /**
      * Delete a lesson
      */
+    @Operation(summary = "Delete a lesson")
     @DeleteMapping("/{lessonId}")
     public ResponseEntity<Void> deleteLesson(@PathVariable String lessonId) {
         log.info("Deleting lesson with ID: {}", lessonId);

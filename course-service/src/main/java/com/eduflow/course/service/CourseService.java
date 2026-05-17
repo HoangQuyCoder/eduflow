@@ -54,7 +54,7 @@ public class CourseService {
                 .level(courseDTO.getLevel())
                 .duration(courseDTO.getDuration())
                 .thumbnail(courseDTO.getThumbnail())
-                .isPublished(false)
+                .isPublished(courseDTO.getIsPublished())
                 .enrollmentCount(0)
                 .totalReviews(0)
                 .averageRating(0.0)
@@ -376,4 +376,3 @@ public class CourseService {
     }
 
 }
-

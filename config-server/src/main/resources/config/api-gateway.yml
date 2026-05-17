@@ -32,6 +32,43 @@ spring:
             - Path=/api/v1/notifications/**
           filters:
             - AuthenticationFilter
+        - id: identity-openapi
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/identity-service/v3/api-docs/**
+          filters:
+            - RewritePath=/identity-service/(?<segment>.*), /$\{segment}
+        - id: course-openapi
+          uri: lb://COURSE-SERVICE
+          predicates:
+            - Path=/course-service/v3/api-docs/**
+          filters:
+            - RewritePath=/course-service/(?<segment>.*), /$\{segment}
+        - id: enrollment-openapi
+          uri: lb://ENROLLMENT-SERVICE
+          predicates:
+            - Path=/enrollment-service/v3/api-docs/**
+          filters:
+            - RewritePath=/enrollment-service/(?<segment>.*), /$\{segment}
+        - id: notification-openapi
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/notification-service/v3/api-docs/**
+          filters:
+            - RewritePath=/notification-service/(?<segment>.*), /$\{segment}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Identity Service
+        url: /identity-service/v3/api-docs
+      - name: Course Service
+        url: /course-service/v3/api-docs
+      - name: Enrollment Service
+        url: /enrollment-service/v3/api-docs
+      - name: Notification Service
+        url: /notification-service/v3/api-docs
 
 server:
   port: 8080
