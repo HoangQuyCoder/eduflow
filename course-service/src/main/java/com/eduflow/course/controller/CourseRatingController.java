@@ -2,6 +2,8 @@ package com.eduflow.course.controller;
 
 import com.eduflow.course.dto.CourseRatingDTO;
 import com.eduflow.course.service.CourseRatingService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,29 +11,33 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/ratings")
 @Validated
+@RequiredArgsConstructor
+@Slf4j
+@Tag(name = "Course Rating Management", description = "Endpoints for managing course reviews and ratings")
 public class CourseRatingController {
-
-    private static final Logger log = LoggerFactory.getLogger(CourseRatingController.class);
 
     private final CourseRatingService courseRatingService;
 
     /**
      * Rate or update rating for a course
      */
+    @Operation(summary = "Rate or update rating for a course")
     @PostMapping("/courses/{courseId}")
     public ResponseEntity<CourseRatingDTO> rateOrUpdateCourse(
             @PathVariable String courseId,
-            @RequestHeader("X-User-Id") String userId,
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String userId,
             @Valid @RequestBody CourseRatingDTO ratingDTO) {
         log.info("Creating/updating rating for course: {} by user: {}", courseId, userId);
         
@@ -42,6 +48,7 @@ public class CourseRatingController {
     /**
      * Delete a rating
      */
+    @Operation(summary = "Delete a rating")
     @DeleteMapping("/{ratingId}")
     public ResponseEntity<Void> deleteRating(@PathVariable String ratingId) {
         log.info("Deleting rating with ID: {}", ratingId);
@@ -90,10 +97,11 @@ public class CourseRatingController {
     /**
      * Get user's rating for a course
      */
+    @Operation(summary = "Get user's rating for a course")
     @GetMapping("/courses/{courseId}/user")
     public ResponseEntity<CourseRatingDTO> getUserRatingForCourse(
             @PathVariable String courseId,
-            @RequestHeader("X-User-Id") String userId) {
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String userId) {
         log.info("Fetching rating for course: {} by user: {}", courseId, userId);
         
         CourseRatingDTO rating = courseRatingService.getUserRatingForCourse(courseId, userId);
@@ -111,11 +119,5 @@ public class CourseRatingController {
         return ResponseEntity.ok(count);
     }
 
-    public CourseRatingService getCourseRatingService() {
-        return courseRatingService;
-    }
-
-    public CourseRatingController(CourseRatingService courseRatingService) {
-        this.courseRatingService = courseRatingService;
-    }
 }
+

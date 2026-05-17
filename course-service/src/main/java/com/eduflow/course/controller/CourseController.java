@@ -2,6 +2,8 @@ package com.eduflow.course.controller;
 
 import com.eduflow.course.dto.CourseDTO;
 import com.eduflow.course.service.CourseService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,30 +12,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/courses")
 @Validated
+@RequiredArgsConstructor
+@Slf4j
+@Tag(name = "Course Management", description = "Endpoints for creating, updating, and viewing courses")
 public class CourseController {
-
-    private static final Logger log = LoggerFactory.getLogger(CourseController.class);
 
     private final CourseService courseService;
 
     /**
      * Create a new course
      */
+    @Operation(summary = "Create a new course")
     @PostMapping
     public ResponseEntity<CourseDTO> createCourse(
             @Valid @RequestBody CourseDTO courseDTO,
-            @RequestHeader("X-User-Id") String userId) {
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String userId) {
         log.info("Creating course with title: {}", courseDTO.getTitle());
         
         CourseDTO createdCourse = courseService.createCourse(courseDTO, userId);
@@ -43,11 +49,12 @@ public class CourseController {
     /**
      * Update a course
      */
+    @Operation(summary = "Update an existing course")
     @PutMapping("/{courseId}")
     public ResponseEntity<CourseDTO> updateCourse(
             @PathVariable String courseId,
             @Valid @RequestBody CourseDTO courseDTO,
-            @RequestHeader("X-User-Id") String userId) {
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String userId) {
         log.info("Updating course with ID: {}", courseId);
         
         CourseDTO updatedCourse = courseService.updateCourse(courseId, courseDTO, userId);
@@ -57,11 +64,12 @@ public class CourseController {
     /**
      * Publish or unpublish a course
      */
+    @Operation(summary = "Publish or unpublish a course")
     @PatchMapping("/{courseId}/publish")
     public ResponseEntity<CourseDTO> publishCourse(
             @PathVariable String courseId,
             @RequestParam Boolean isPublished,
-            @RequestHeader("X-User-Id") String userId) {
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String userId) {
         log.info("Publishing course with ID: {} - isPublished: {}", courseId, isPublished);
         
         CourseDTO publishedCourse = courseService.publishCourse(courseId, isPublished, userId);
@@ -71,10 +79,11 @@ public class CourseController {
     /**
      * Delete a course
      */
+    @Operation(summary = "Delete a course")
     @DeleteMapping("/{courseId}")
     public ResponseEntity<Void> deleteCourse(
             @PathVariable String courseId,
-            @RequestHeader("X-User-Id") String userId) {
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String userId) {
         log.info("Deleting course with ID: {}", courseId);
         
         courseService.deleteCourse(courseId, userId);
@@ -204,11 +213,5 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    public CourseService getCourseService() {
-        return courseService;
-    }
-
-    public CourseController(CourseService courseService) {
-        this.courseService = courseService;
-    }
 }
+

@@ -8,14 +8,14 @@ import com.eduflow.course.exception.CourseNotFoundException;
 import com.eduflow.course.exception.UnauthorizedException;
 import com.eduflow.course.repository.CourseRepository;
 import com.eduflow.course.repository.LessonRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,9 +25,9 @@ import com.eduflow.course.dto.external.UserDTO;
 import com.eduflow.course.feign.IdentityClient;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class CourseService {
-
-    private static final Logger log = LoggerFactory.getLogger(CourseService.class);
 
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
@@ -54,7 +54,7 @@ public class CourseService {
                 .level(courseDTO.getLevel())
                 .duration(courseDTO.getDuration())
                 .thumbnail(courseDTO.getThumbnail())
-                .isPublished(false)
+                .isPublished(courseDTO.getIsPublished())
                 .enrollmentCount(0)
                 .totalReviews(0)
                 .averageRating(0.0)
@@ -375,33 +375,4 @@ public class CourseService {
         }
     }
 
-    public CourseRepository getCourseRepository() {
-        return courseRepository;
-    }
-
-    public LessonRepository getLessonRepository() {
-        return lessonRepository;
-    }
-
-    public RedisTemplate<String, Object> getRedisTemplate() {
-        return redisTemplate;
-    }
-
-    public KafkaTemplate<String, Object> getKafkaTemplate() {
-        return kafkaTemplate;
-    }
-
-    public IdentityClient getIdentityClient() {
-        return identityClient;
-    }
-
-    public CourseService(CourseRepository courseRepository, LessonRepository lessonRepository,
-            RedisTemplate<String, Object> redisTemplate, KafkaTemplate<String, Object> kafkaTemplate,
-            com.eduflow.course.feign.IdentityClient identityClient) {
-        this.courseRepository = courseRepository;
-        this.lessonRepository = lessonRepository;
-        this.redisTemplate = redisTemplate;
-        this.kafkaTemplate = kafkaTemplate;
-        this.identityClient = identityClient;
-    }
 }

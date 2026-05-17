@@ -1,39 +1,17 @@
 package com.eduflow.enrollment.dto;
 
+import lombok.*;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Schema(description = "Request payload for course enrollment")
 public class EnrollmentRequest {
+    @Schema(description = "Unique identifier of the course to enroll in", example = "123e4567-e89b-12d3-a456-426614174000")
     private UUID courseId;
-
-    public UUID getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(UUID courseId) {
-        this.courseId = courseId;
-    }
-
-    public EnrollmentRequest() {}
-
-    public EnrollmentRequest(UUID courseId) {
-        this.courseId = courseId;
-    }
-
-    public static EnrollmentRequestBuilder builder() {
-        return new EnrollmentRequestBuilder();
-    }
-    
-    public static class EnrollmentRequestBuilder {
-        private UUID courseId;
-        
-        public EnrollmentRequestBuilder courseId(UUID courseId) {
-            this.courseId = courseId;
-            return this;
-        }
-
-        public EnrollmentRequest build() {
-            return new EnrollmentRequest(courseId);
-        }
-    }
 }
+

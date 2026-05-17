@@ -6,6 +6,7 @@ import com.eduflow.identity.entity.UserProfile;
 import com.eduflow.identity.repository.UserProfileRepository;
 import com.eduflow.identity.repository.UserRepository;
 import com.eduflow.identity.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
@@ -77,39 +79,5 @@ public class UserService {
                 .build();
     }
 
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
-
-    public UserProfileRepository getUserProfileRepository() {
-        return userProfileRepository;
-    }
-
-    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository) {
-        this.userRepository = userRepository;
-        this.userProfileRepository = userProfileRepository;
-    }
-
-    public static UserServiceBuilder builder() {
-        return new UserServiceBuilder();
-    }
-
-    public static class UserServiceBuilder {
-        private UserRepository userRepository;
-        private UserProfileRepository userProfileRepository;
-
-        public UserServiceBuilder userRepository(UserRepository userRepository) {
-            this.userRepository = userRepository;
-            return this;
-        }
-
-        public UserServiceBuilder userProfileRepository(UserProfileRepository userProfileRepository) {
-            this.userProfileRepository = userProfileRepository;
-            return this;
-        }
-
-        public UserService build() {
-            return new UserService(userRepository, userProfileRepository);
-        }
-    }
 }
+

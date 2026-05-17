@@ -8,6 +8,8 @@ import com.eduflow.enrollment.event.EnrollmentEvent;
 import com.eduflow.enrollment.feign.CourseClient;
 import com.eduflow.enrollment.repository.EnrollmentRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,23 +19,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class EnrollmentService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final CourseClient courseClient;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public EnrollmentService(EnrollmentRepository enrollmentRepository,
-            CourseClient courseClient,
-            KafkaTemplate<String, Object> kafkaTemplate) {
-        this.enrollmentRepository = enrollmentRepository;
-        this.courseClient = courseClient;
-        this.kafkaTemplate = kafkaTemplate;
-    }
-
     @Transactional
     @CircuitBreaker(name = "courseService", fallbackMethod = "fallbackEnroll")
     public EnrollmentResponse enroll(UUID userId, EnrollmentRequest request) {
+        log.info("Enrolling user: {} in course: {}", userId, request.getCourseId());
         // Validate course existence via Feign
         CourseDTO course = courseClient.getCourse(request.getCourseId());
         if (course == null) {
@@ -45,9 +42,10 @@ public class EnrollmentService {
             throw new RuntimeException("User already enrolled in this course");
         }
 
-        Enrollment enrollment = new Enrollment();
-        enrollment.setUserId(userId);
-        enrollment.setCourseId(request.getCourseId());
+        Enrollment enrollment = Enrollment.builder()
+                .userId(userId)
+                .courseId(request.getCourseId())
+                .build();
 
         Enrollment saved = enrollmentRepository.save(enrollment);
 
@@ -80,25 +78,14 @@ public class EnrollmentService {
     }
 
     private EnrollmentResponse mapToResponse(Enrollment enrollment) {
-        EnrollmentResponse response = new EnrollmentResponse();
-        response.setId(enrollment.getId());
-        response.setUserId(enrollment.getUserId());
-        response.setCourseId(enrollment.getCourseId());
-        response.setEnrolledAt(enrollment.getEnrolledAt());
-        response.setStatus(enrollment.getStatus().name());
-        response.setProgressPercent(enrollment.getProgressPercent());
-        return response;
-    }
-
-    public EnrollmentRepository getEnrollmentRepository() {
-        return enrollmentRepository;
-    }
-
-    public CourseClient getCourseClient() {
-        return courseClient;
-    }
-
-    public KafkaTemplate<String, Object> getKafkaTemplate() {
-        return kafkaTemplate;
+        return EnrollmentResponse.builder()
+                .id(enrollment.getId())
+                .userId(enrollment.getUserId())
+                .courseId(enrollment.getCourseId())
+                .enrolledAt(enrollment.getEnrolledAt())
+                .status(enrollment.getStatus().name())
+                .progressPercent(enrollment.getProgressPercent())
+                .build();
     }
 }
+

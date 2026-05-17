@@ -1,4 +1,4 @@
-package com.eduflow.course.config;
+package com.eduflow.notification.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,7 +24,7 @@ public class SecurityHeaderFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        
+
         String userId = request.getHeader("X-User-Id");
         String rolesHeader = request.getHeader("X-User-Roles");
 
@@ -35,7 +35,7 @@ public class SecurityHeaderFilter extends OncePerRequestFilter {
 
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                     userId, null, authorities);
-            
+
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(auth);
         }

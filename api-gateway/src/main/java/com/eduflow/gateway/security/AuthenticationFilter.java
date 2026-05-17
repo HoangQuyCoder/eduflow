@@ -1,29 +1,52 @@
 package com.eduflow.gateway.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
+
 import java.util.List;
 
 @Component
+@Slf4j
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthenticationFilter.class);
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    private JwtTokenProvider jwtTokenProvider;
+    private static final List<String> OPEN_ENDPOINTS = List.of(
+            "/api/v1/auth/**",
+            "/actuator/**",
+            "/eureka/**",
+            "/v3/api-docs/**",
+            "/*/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html");
 
-    public AuthenticationFilter() {
+    public AuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
         super(Config.class);
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
-            String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+            ServerHttpRequest request = exchange.getRequest();
+            String path = request.getURI().getPath();
+
+            // Skip authentication for open endpoints
+            boolean isOpenEndpoint = OPEN_ENDPOINTS.stream()
+                    .anyMatch(pattern -> pathMatcher.match(pattern, path));
+
+            if (isOpenEndpoint) {
+                return chain.filter(exchange);
+            }
+
+            String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -40,28 +63,16 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             String userId = jwtTokenProvider.getUserIdFromToken(token);
             List<String> roles = jwtTokenProvider.getRolesFromToken(token);
 
-            exchange.getRequest().mutate()
+            ServerHttpRequest mutatedRequest = request.mutate()
                     .header("X-User-Id", userId)
                     .header("X-User-Roles", String.join(",", roles))
                     .build();
 
             log.info("Authenticated user: {}, roles: {}", userId, roles);
-            return chain.filter(exchange);
+            return chain.filter(exchange.mutate().request(mutatedRequest).build());
         };
     }
 
     public static class Config {
-    }
-
-    public JwtTokenProvider getJwtTokenProvider() {
-        return jwtTokenProvider;
-    }
-
-    public void setJwtTokenProvider(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
-
-    public AuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 }

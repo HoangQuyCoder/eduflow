@@ -11,6 +11,8 @@ import com.eduflow.identity.repository.UserProfileRepository;
 import com.eduflow.identity.repository.UserRepository;
 import com.eduflow.identity.security.CustomUserDetails;
 import com.eduflow.identity.security.JwtService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -123,74 +127,5 @@ public class AuthService {
         throw new RuntimeException("Invalid refresh token");
     }
 
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
-
-    public UserProfileRepository getUserProfileRepository() {
-        return userProfileRepository;
-    }
-
-    public PasswordEncoder getPasswordEncoder() {
-        return passwordEncoder;
-    }
-
-    public JwtService getJwtService() {
-        return jwtService;
-    }
-
-    public AuthenticationManager getAuthenticationManager() {
-        return authenticationManager;
-    }
-
-    public AuthService(UserRepository userRepository, UserProfileRepository userProfileRepository,
-            PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.userProfileRepository = userProfileRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-    }
-
-    public static AuthServiceBuilder builder() {
-        return new AuthServiceBuilder();
-    }
-
-    public static class AuthServiceBuilder {
-        private UserRepository userRepository;
-        private UserProfileRepository userProfileRepository;
-        private PasswordEncoder passwordEncoder;
-        private JwtService jwtService;
-        private AuthenticationManager authenticationManager;
-
-        public AuthServiceBuilder userRepository(UserRepository userRepository) {
-            this.userRepository = userRepository;
-            return this;
-        }
-
-        public AuthServiceBuilder userProfileRepository(UserProfileRepository userProfileRepository) {
-            this.userProfileRepository = userProfileRepository;
-            return this;
-        }
-
-        public AuthServiceBuilder passwordEncoder(PasswordEncoder passwordEncoder) {
-            this.passwordEncoder = passwordEncoder;
-            return this;
-        }
-
-        public AuthServiceBuilder jwtService(JwtService jwtService) {
-            this.jwtService = jwtService;
-            return this;
-        }
-
-        public AuthServiceBuilder authenticationManager(AuthenticationManager authenticationManager) {
-            this.authenticationManager = authenticationManager;
-            return this;
-        }
-
-        public AuthService build() {
-            return new AuthService(userRepository, userProfileRepository, passwordEncoder, jwtService,
-                    authenticationManager);
-        }
-    }
 }
+
