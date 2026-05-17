@@ -21,8 +21,11 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     private static final List<String> OPEN_ENDPOINTS = List.of(
             "/api/v1/auth/**",
             "/actuator/**",
-            "/eureka/**"
-    );
+            "/eureka/**",
+            "/v3/api-docs/**",
+            "/*/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html");
 
     public AuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
         super(Config.class);
