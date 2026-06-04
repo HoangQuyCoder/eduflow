@@ -1,46 +1,56 @@
 # Course Service
 
-Dịch vụ quản lý nội dung học tập, bao gồm khóa học, bài học và hệ thống đánh giá cho EduFlow.
+A microservice responsible for managing learning content within the EduFlow platform, including courses, lessons, ratings, and reviews.
 
-## 🛠 Tính Năng
-- Quản lý khóa học (CRUD) và công bố nội dung.
-- Quản lý bài học (Lessons) theo từng khóa học.
-- Hệ thống đánh giá và nhận xét (Ratings & Reviews).
-- Caching các khóa học nổi bật để tối ưu hiệu suất.
-- Tìm kiếm và lọc khóa học theo danh mục, mức độ.
+## 🛠 Features
 
-## 🏗 Công Nghệ
-- **Database**: MongoDB (Lưu trữ tài liệu linh hoạt).
-- **Caching**: Redis (Lưu trữ Featured Courses).
-- **Messaging**: Kafka Producer (Gửi sự kiện khóa học mới).
-- **Communication**: OpenFeign (Lấy thông tin giảng viên từ Identity Service).
-- **Resilience**: Resilience4j Circuit Breaker.
+* Course management (CRUD operations) and content publishing.
+* Lesson management within individual courses.
+* Ratings and reviews system for learner feedback.
+* Caching featured courses to improve performance and reduce database load.
+* Course search and filtering by category and difficulty level.
 
-## ⚙️ Cấu Hình
-- `MONGO_URI`: Kết nối MongoDB.
-- `REDIS_HOST`: Host của Redis cache.
-- `KAFKA_BOOTSTRAP_SERVERS`: Kafka broker list.
-- `EUREKA_HOST`: URL của Discovery Service.
+## 🏗 Technology Stack
+
+* **Database**: MongoDB (Flexible document-based storage)
+* **Caching**: Redis (Stores featured courses)
+* **Messaging**: Kafka Producer (Publishes course-related events)
+* **Inter-Service Communication**: OpenFeign (Retrieves instructor information from the Identity Service)
+* **Resilience**: Resilience4j Circuit Breaker
+
+## ⚙️ Configuration
+
+* **MONGO_URI**: MongoDB connection string.
+* **REDIS_HOST**: Redis cache host.
+* **KAFKA_BOOTSTRAP_SERVERS**: Kafka broker addresses.
+* **EUREKA_HOST**: Discovery Service URL.
 
 ## 📡 API Endpoints
 
-### Khóa Học (Courses)
-- `GET /api/v1/courses`: Lấy danh sách khóa học (phân trang).
-- `POST /api/v1/courses`: Tạo khóa học mới.
-- `GET /api/v1/courses/{id}`: Chi tiết khóa học.
-- `GET /api/v1/courses/featured`: Khóa học nổi bật (từ Cache).
+### Courses
 
-### Bài Học (Lessons)
-- `GET /api/v1/lessons/course/{courseId}`: Danh sách bài học của khóa học.
-- `POST /api/v1/lessons`: Thêm bài học mới.
-- `PUT /api/v1/lessons/{id}`: Cập nhật nội dung bài học.
+* `GET /api/v1/courses` — Retrieve a paginated list of courses.
+* `POST /api/v1/courses` — Create a new course.
+* `GET /api/v1/courses/{id}` — Retrieve course details.
+* `GET /api/v1/courses/featured` — Retrieve featured courses from cache.
 
-### Đánh Giá (Ratings)
-- `GET /api/v1/ratings/courses/{courseId}`: Lấy danh sách đánh giá.
-- `POST /api/v1/ratings/courses/{courseId}`: Gửi đánh giá mới.
+### Lessons
+
+* `GET /api/v1/lessons/course/{courseId}` — Retrieve all lessons for a specific course.
+* `POST /api/v1/lessons` — Create a new lesson.
+* `PUT /api/v1/lessons/{id}` — Update lesson content.
+
+### Ratings & Reviews
+
+* `GET /api/v1/ratings/courses/{courseId}` — Retrieve ratings and reviews for a course.
+* `POST /api/v1/ratings/courses/{courseId}` — Submit a new rating and review.
 
 ## 📖 Kafka Events
-Publish event `course-events` khi có thay đổi trạng thái khóa học:
+
+The service publishes events to the `course-events` topic whenever a course status changes.
+
+Example payload:
+
 ```json
 {
   "courseId": "uuid",
@@ -50,5 +60,20 @@ Publish event `course-events` khi có thay đổi trạng thái khóa học:
 }
 ```
 
+### Supported Event Types
+
+* `COURSE_CREATED`
+* `COURSE_UPDATED`
+* `COURSE_PUBLISHED`
+* `COURSE_UNPUBLISHED`
+* `COURSE_DELETED`
+
 ## 🔍 Health Check
-Truy cập: `http://localhost:8082/actuator/health`
+
+Endpoint:
+
+```text
+http://localhost:8082/actuator/health
+```
+
+This endpoint can be used to monitor the service's health and availability.
