@@ -1,20 +1,54 @@
 # Eureka Server
 
-Dịch vụ đăng ký và phát hiện dịch vụ (Service Discovery) cho hệ thống EduFlow.
+The Service Discovery component of the EduFlow platform, responsible for service registration, discovery, and monitoring across the microservices ecosystem.
 
-## 🛠 Tính Năng
-- Quản lý danh sách các instance của microservices đang hoạt động.
-- Giám sát trạng thái (Health monitoring) của các dịch vụ.
-- Cung cấp thông tin cho API Gateway và các dịch vụ khác để thực hiện Load Balancing.
+## 🛠 Features
 
-## ⚙️ Cấu Hình
-- **Cổng mặc định**: 8761
-- **Dashboard**: Truy cập `http://localhost:8761` để xem giao diện quản lý.
+* Maintains a registry of active microservice instances.
+* Monitors service health and availability.
+* Provides service location information to the API Gateway and other services.
+* Enables client-side load balancing and dynamic service discovery.
+* Reduces dependency on hardcoded service endpoints.
 
-## 🚀 Cách Chạy
+## 🏗 Technology Stack
+
+* **Framework**: Spring Cloud Netflix Eureka Server
+* **Service Discovery**: Eureka
+* **Monitoring**: Built-in Eureka Dashboard
+
+## ⚙️ Configuration
+
+* **Default Port**: `8761`
+* **Dashboard URL**:
+
+```text
+http://localhost:8761
+```
+
+The dashboard provides a real-time view of registered services and their current status.
+
+## 🚀 Running the Service
+
+Start the Eureka Server using:
+
 ```bash
 mvn spring-boot:run
 ```
 
-## 📝 Lưu ý
-Trong môi trường Docker, các dịch vụ khác cần chờ Eureka Server sẵn sàng trước khi đăng ký.
+Once started, other microservices can register themselves with the service registry and discover each other dynamically.
+
+## 🔍 Health Check
+
+Endpoint:
+
+```text
+http://localhost:8761/actuator/health
+```
+
+This endpoint can be used to verify the health and availability of the Eureka Server.
+
+## 📝 Notes
+
+* In a Docker environment, dependent services should wait until the Eureka Server is fully initialized before attempting registration.
+* All client services must be configured with the correct Eureka Server URL using the `eureka.client.serviceUrl.defaultZone` property.
+* The Eureka Server itself does not contain business logic; it is dedicated to service registration and discovery.
