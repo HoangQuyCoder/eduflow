@@ -1,32 +1,45 @@
 # Enrollment Service
 
-Dịch vụ quản lý đăng ký khóa học và quy trình thanh toán.
+A microservice responsible for managing course enrollments and payment processing within the EduFlow platform.
 
-## 🛠 Tính Năng
-- Đăng ký người dùng vào khóa học.
-- Kiểm tra trạng thái đăng ký.
-- Xử lý đơn hàng và thanh toán (giả lập).
-- Gửi sự kiện đăng ký thành công sang Kafka để thông báo.
+## 🛠 Features
 
-## 🏗 Công Nghệ
-- **Database**: PostgreSQL
-- **Messaging**: Kafka Producer
-- **Communication**: OpenFeign (gọi sang Course Service để kiểm tra tồn tại khóa học).
-- **Resilience**: Resilience4j Circuit Breaker.
+* Enroll users in courses.
+* Check enrollment status and enrollment records.
+* Process orders and payments (simulated payment workflow).
+* Publish successful enrollment events to Kafka for downstream services such as notifications and analytics.
+
+## 🏗 Technology Stack
+
+* **Database**: PostgreSQL
+* **Messaging**: Kafka Producer
+* **Inter-Service Communication**: OpenFeign (used to verify course availability through the Course Service)
+* **Resilience**: Resilience4j Circuit Breaker
 
 ## 📡 API Endpoints
-- `POST /api/v1/enrollments`: Đăng ký khóa học mới.
-- `GET /api/v1/enrollments/user/{userId}`: Lấy danh sách khóa học người dùng đã đăng ký.
-- `GET /api/v1/enrollments/course/{courseId}`: Kiểm tra đăng ký của khóa học.
-- `POST /api/v1/payments`: Xử lý thanh toán cho đơn hàng.
 
-## ⚙️ Cấu Hình
-- `POSTGRES_HOST`: Database host.
-- `KAFKA_BOOTSTRAP_SERVERS`: Kafka broker list.
-- `FEIGN_CLIENT_COURSE_URL`: URL đến Course Service.
+### Enrollments
+
+* `POST /api/v1/enrollments` — Create a new course enrollment.
+* `GET /api/v1/enrollments/user/{userId}` — Retrieve all courses enrolled by a specific user.
+* `GET /api/v1/enrollments/course/{courseId}` — Retrieve enrollment information for a specific course.
+
+### Payments
+
+* `POST /api/v1/payments` — Process a payment for an enrollment order.
+
+## ⚙️ Configuration
+
+* **POSTGRES_HOST**: PostgreSQL database host.
+* **KAFKA_BOOTSTRAP_SERVERS**: Kafka broker addresses.
+* **FEIGN_CLIENT_COURSE_URL**: URL of the Course Service.
 
 ## 📖 Kafka Events
-Publish event `enrollment-events` với payload:
+
+The service publishes events to the `enrollment-events` topic whenever an enrollment is successfully completed.
+
+Example payload:
+
 ```json
 {
   "enrollmentId": "uuid",
@@ -35,3 +48,21 @@ Publish event `enrollment-events` với payload:
   "status": "COMPLETED"
 }
 ```
+
+### Supported Status Values
+
+* `PENDING`
+* `PROCESSING`
+* `COMPLETED`
+* `FAILED`
+* `CANCELLED`
+
+## 🔍 Health Check
+
+Endpoint:
+
+```text
+http://localhost:8084/actuator/health
+```
+
+This endpoint can be used to monitor the service's health and availability.
