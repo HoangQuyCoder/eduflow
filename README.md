@@ -1,24 +1,26 @@
-# EduFlow - Hệ Thống Microservices Học Trực Tuyến
+# EduFlow - Online Learning Microservices System
 
-EduFlow là một nền tảng học trực tuyến được xây dựng trên kiến trúc Microservices hiện đại, sử dụng Spring Boot, Kafka, Redis, PostgreSQL và MongoDB.
+EduFlow is a modern online learning platform built on a **microservices architecture**, using Spring Boot, Kafka, Redis, PostgreSQL, and MongoDB.
 
-## 🏗 Kiến Trúc Hệ Thống
+## 🏗 System Architecture
 
-Dự án bao gồm các dịch vụ sau:
+The project consists of the following services:
 
-1.  **Eureka Server**: Service Discovery để quản lý các microservices.
-2.  **API Gateway**: Cổng vào duy nhất của hệ thống, xử lý định tuyến và bảo mật.
-3.  **Identity Service**: Quản lý người dùng, xác thực JWT và phân quyền.
-4.  **Course Service**: Quản lý khóa học, bài học và đánh giá (Sử dụng MongoDB & Redis).
-5.  **Enrollment Service**: Quản lý đăng ký khóa học và thanh toán (Sử dụng PostgreSQL).
-6.  **Notification Service**: Xử lý thông báo bất đồng bộ qua Kafka (Sử dụng MongoDB).
+1. **Eureka Server**: Service Discovery for managing microservices.
+2. **API Gateway**: Single entry point for the system, handling routing and security.
+3. **Identity Service**: User management, JWT authentication, and authorization.
+4. **Course Service**: Manages courses, lessons, and reviews (uses MongoDB & Redis).
+5. **Enrollment Service**: Handles course enrollment and payments (uses PostgreSQL).
+6. **Notification Service**: Manages asynchronous notifications via Kafka (uses MongoDB).
 
-## 🛠 Công Nghệ Sử Dụng
+## 🛠 Technologies Used
 
 - **Backend**: Java 21, Spring Boot 3.2.x
 - **Service Discovery**: Spring Cloud Netflix Eureka
 - **API Gateway**: Spring Cloud Gateway
-- **Databases**: PostgreSQL (Identity, Enrollment), MongoDB (Course, Notification)
+- **Databases**: 
+  - PostgreSQL (Identity, Enrollment)
+  - MongoDB (Course, Notification)
 - **Caching**: Redis
 - **Messaging**: Apache Kafka
 - **Resilience**: Resilience4j (Circuit Breaker, Retry)
@@ -26,54 +28,62 @@ Dự án bao gồm các dịch vụ sau:
 - **CI/CD**: GitHub Actions
 - **Orchestration**: Kubernetes (K8s)
 
-## 📂 Cấu Trúc Thư Mục
+## 📂 Project Structure
 
 ```text
 edu-flow/
-├── api-gateway/          # Cổng API duy nhất
-├── course-service/       # Quản lý nội dung học tập
-├── enrollment-service/   # Quản lý đăng ký & thanh toán
-├── eureka-server/        # Discovery Service
-├── identity-service/     # Quản lý người dùng & Auth
-├── notification-service/ # Dịch vụ thông báo
-├── docker/               # Cấu hình Docker & .env
-├── k8s/                  # Kubernetes Manifests
-└── docs/                 # Tài liệu API & Thiết kế
+├── api-gateway/          # Single API entry point
+├── course-service/       # Course and learning content management
+├── enrollment-service/   # Enrollment & payment management
+├── eureka-server/        # Service Discovery
+├── identity-service/     # User management & Authentication
+├── notification-service/ # Notification service
+├── docker/               # Docker configurations & .env files
+├── k8s/                  # Kubernetes manifests
+└── docs/                 # API documentation & system design
 ```
 
-## 🚀 Hướng Dẫn Khởi Chạy
+## 🚀 Getting Started
 
-### 1. Yêu Cầu Hệ Thống
+### 1. System Requirements
 - Java 21 LTS
 - Maven 3.8+
 - Docker & Docker Compose
 
-### 2. Chạy Bằng Docker Compose (Khuyên dùng)
+### 2. Running with Docker Compose (Recommended)
+
 ```bash
-# Di chuyển vào thư mục docker
+# Navigate to the docker directory
 cd docker
 
-# Khởi chạy toàn bộ stack (Infrastructure + Microservices)
+# Start the entire stack (Infrastructure + Microservices)
 docker-compose up --build
 ```
 
-### 3. Chạy Thủ Công (Development)
-Nếu bạn muốn chạy từng dịch vụ, hãy đảm bảo các hạ tầng (Postgres, Mongo, Kafka, Redis) đã sẵn sàng.
-Thứ tự khởi chạy khuyến nghị:
-1. `eureka-server` (Cổng 8761)
-2. `identity-service` (Cổng 8081)
-3. Các dịch vụ khác (`course`, `enrollment`, `notification`)
-4. `api-gateway` (Cổng 8080)
+### 3. Manual Run (Development)
 
-## 🔐 Bảo Mật
-Hệ thống sử dụng **JWT (JSON Web Token)** để xác thực.
-- Các yêu cầu đến Gateway sẽ được kiểm tra Token.
-- Gateway chuyển tiếp `X-User-Id` và `X-User-Role` xuống các dịch vụ bên dưới.
+If you want to run each service individually, make sure the infrastructure services (PostgreSQL, MongoDB, Kafka, Redis) are running first.
+
+**Recommended startup order:**
+1. `eureka-server` (Port 8761)
+2. `identity-service` (Port 8081)
+3. Other services (`course-service`, `enrollment-service`, `notification-service`)
+4. `api-gateway` (Port 8080)
+
+## 🔐 Security
+
+The system uses **JWT (JSON Web Tokens)** for authentication.
+
+- All requests to the API Gateway are validated for a valid token.
+- The Gateway forwards `X-User-Id` and `X-User-Role` headers to downstream services.
 
 ## 📈 Monitoring
-Các dịch vụ đều tích hợp **Spring Boot Actuator** và **Prometheus**:
-- Health check: `/actuator/health`
-- Metrics: `/actuator/prometheus`
 
-## 📄 Giấy Phép
-Dự án được phát hành dưới giấy phép MIT.
+All services include **Spring Boot Actuator** and **Prometheus** metrics:
+
+- Health check: `/actuator/health`
+- Metrics endpoint: `/actuator/prometheus`
+
+## 📄 License
+
+This project is released under the **MIT License**.
